@@ -1,11 +1,11 @@
 package com.booksaw.betterTeams.game;
 
-import com.booksaw.betterTeams.game.presets.AbstractGame;
+import com.booksaw.betterTeams.game.presets.Game;
 
 public class GameManager {
 
     private static GameManager instance; // Singleton instance
-    private AbstractGame currentGame; // Current loaded game
+    private Game currentGame; // Current loaded game
 
     private GameManager() {
     }
@@ -26,7 +26,7 @@ public class GameManager {
      * @param game The game to start.
      * @return true if the game was successfully started, false if another game is already running.
      */
-    public synchronized boolean startGame(AbstractGame game) {
+    public synchronized boolean startGame(Game game) {
         if (currentGame != null && currentGame.isRunning()) {
             return false; // A game is already running
         }
@@ -50,7 +50,7 @@ public class GameManager {
      *
      * @return The currently loaded game, or null if no game is loaded.
      */
-    public AbstractGame getCurrentGame() {
+    public Game getCurrentGame() {
         return currentGame;
     }
 

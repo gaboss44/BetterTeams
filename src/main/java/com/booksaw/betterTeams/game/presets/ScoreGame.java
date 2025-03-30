@@ -10,7 +10,7 @@ import java.util.UUID;
  * This abstract class represents a game where teams compete by scoring points.
  * It extends AbstractGame and provides functionality for managing team scores.
  */
-public abstract class ScoreGame extends AbstractGame {
+public abstract class ScoreGame extends Game {
 
     private final Map<UUID, Integer> teamScores = new HashMap<>(); // Scores for each team
 
