@@ -1,6 +1,7 @@
 package com.booksaw.betterTeams.game.presets;
 
 import com.booksaw.betterTeams.Team;
+import com.booksaw.betterTeams.game.Game;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,20 +66,18 @@ public abstract class ScoreGame extends Game {
         return teamScores;
     }
 
-    /**
-     * Called when a team's score is updated.
-     *
-     * @param team  The team whose score was updated.
-     * @param newScore The new score of the team.
-     */
-    public abstract void onScoreUpdated(Team team, int newScore);
+    public void onScoreUpdated(Team team, int newScore) {
+        // This method can be overridden to perform actions when a team's score is updated.
+    }
 
     /**
      * Called when a team wins the game.
      *
      * @param winningTeam The team that won the game.
      */
-    public abstract void onTeamWin(Team winningTeam);
+    public void onTeamWin(Team winningTeam) {
+        // This method can be overridden to perform actions when a team wins the game.
+    }
 
     /**
      * Checks if a team has reached the winning score.
@@ -86,7 +85,10 @@ public abstract class ScoreGame extends Game {
      * @param team The team to check.
      * @return true if the team has reached the winning score, false otherwise.
      */
-    public boolean hasTeamWon(Team team) {
+    public boolean hasTeamReachedWinningScore(Team team) {
+        if (!isTeamParticipating(team)) {
+            return false;
+        }
         return getScore(team) >= getWinningScore();
     }
 

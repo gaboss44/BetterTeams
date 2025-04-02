@@ -1,7 +1,7 @@
 package com.booksaw.betterTeams.game.scheduler;
 
 import com.booksaw.betterTeams.Main;
-import com.booksaw.betterTeams.game.presets.Game;
+import com.booksaw.betterTeams.game.Game;
 
 import lombok.Getter;
 
@@ -39,42 +39,22 @@ public class GameRunnable extends BukkitRunnable {
      * @param maxDuration The maximum duration of the game in ticks.
      * @param tickRate    The rate at which the game should be ticked in ticks.
      */
-    public GameRunnable(Game game,
-            @Range(from = 0L, to = Long.MAX_VALUE) long maxDuration) {
-        this(game, maxDuration, 20L, 0L, false);
-    }
 
     public GameRunnable(Game game,
-            @Range(from = 0L, to = Long.MAX_VALUE) long maxDuration,
-            boolean callPostStart) {
-        this(game, maxDuration, 0L, 0L, callPostStart);
+            @Range(from = 0L, to = Long.MAX_VALUE) long maxDuration) {
+        this(game, maxDuration, 0L, 0L);
     }
 
     public GameRunnable(Game game,
             @Range(from = 0L, to = Long.MAX_VALUE) long maxDuration,
             @Range(from = 0L, to = Long.MAX_VALUE) long tickRate) {
-        this(game, maxDuration, tickRate, 0L, false);
-    }
-
-    public GameRunnable(Game game,
-            @Range(from = 0L, to = Long.MAX_VALUE) long maxDuration,
-            @Range(from = 0L, to = Long.MAX_VALUE) long tickRate,
-            boolean callPostStart) {
-        this(game, maxDuration, tickRate, 0L, callPostStart);
+        this(game, maxDuration, tickRate, 0L);
     }
 
     public GameRunnable(Game game,
             @Range(from = 0L, to = Long.MAX_VALUE) long maxDuration,
             @Range(from = 0L, to = Long.MAX_VALUE) long tickRate,
             @Range(from = 0L, to = Long.MAX_VALUE) long startDelay) {
-        this(game, maxDuration, tickRate, startDelay, false);
-    }
-
-    public GameRunnable(Game game,
-            @Range(from = 0L, to = Long.MAX_VALUE) long maxDuration,
-            @Range(from = 0L, to = Long.MAX_VALUE) long tickRate,
-            @Range(from = 0L, to = Long.MAX_VALUE) long startDelay,
-            boolean callPostStart) {
         if (maxDuration < 0L) {
             throw new IllegalArgumentException("Max duration cannot be negative");
         }
@@ -87,9 +67,7 @@ public class GameRunnable extends BukkitRunnable {
             throw new IllegalArgumentException("Tick rate cannot be negative");
         }
         this.tickRate = tickRate;
-        this.callPostStart = callPostStart;
         this.game = game;
-        schedule();
     }
 
     @Override
@@ -105,8 +83,6 @@ public class GameRunnable extends BukkitRunnable {
 
         game.onTick();
 
-        // if the game state changes in game tick, we need to check if the game is still
-        // running
         if (!stopped && !paused) {
             currentDuration++;
             if (getTimeRemaining() <= 0) {
@@ -115,17 +91,23 @@ public class GameRunnable extends BukkitRunnable {
         }
     }
 
-    private void schedule() {
+    public void schedule(boolean callPostStart) {
         if (startDelay > 0L) {
             delayTask = new BukkitRunnable() {
                 @Override
                 public void run() {
                     start();
                 }
-            }.runTaskLater(Main.plugin, startDelay);
-            return;
+            }.runTaskLater(Main.plugin, startDelay -1L);
         }
-        start();
+        else {
+            start();
+        }
+        this.callPostStart = callPostStart;
+    }
+
+    public boolean isScheduled() {
+        return delayTask != null && !delayTask.isCancelled() && delayTask.getTaskId() != -1;
     }
 
     /**
@@ -150,11 +132,7 @@ public class GameRunnable extends BukkitRunnable {
     public void unschedule() {
         delayTask.cancel();
         delayTask = null;
-        
-    }
-
-    public boolean isScheduled() {
-        return delayTask != null;
+        return;
     }
     
     public void stop(boolean callPostEnd) {
@@ -201,20 +179,5 @@ public class GameRunnable extends BukkitRunnable {
      */
     public long getTimeRemaining() {
         return maxDuration - currentDuration;
-    }
-
-    /**
-     * A game is running when the runnable has started and is not stopped.
-     */
-    public boolean isRunning() {
-        return started && !stopped;
-    }
-
-    public boolean isRunningPaused() {
-        return isRunning() && paused;
-    }
-
-    public boolean isRunningNotPaused() {
-        return isRunning() && !paused;
     }
 }
