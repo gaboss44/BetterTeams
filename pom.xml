@@ -111,6 +111,26 @@
             <version>3.0.2</version>
             <scope>compile</scope>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/net.kyori/adventure-text-minimessage -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-minimessage</artifactId>
+            <version>4.20.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/net.kyori/adventure-text-serializer-legacy -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-serializer-legacy</artifactId>
+            <version>4.20.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-platform-bukkit</artifactId>
+            <version>4.3.4</version>
+        </dependency>
 
         <!-- JUnit 5 -->
         <dependency>

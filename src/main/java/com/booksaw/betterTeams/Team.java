@@ -8,11 +8,12 @@ import com.booksaw.betterTeams.message.MessageManager;
 import com.booksaw.betterTeams.message.ReferencedFormatMessage;
 import com.booksaw.betterTeams.message.StaticMessage;
 import com.booksaw.betterTeams.team.*;
-import com.booksaw.betterTeams.team.AnchoredPlayerUuidSetComponent.AnchorResult;
+import com.booksaw.betterTeams.team.AnchoredPlayerUUIDSetComponent.AnchorResult;
 import com.booksaw.betterTeams.team.storage.StorageType;
 import com.booksaw.betterTeams.team.storage.team.StoredTeamValue;
 import com.booksaw.betterTeams.team.storage.team.TeamStorage;
 import lombok.Getter;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * This class is used to manage a team and all of it's participants
@@ -106,7 +108,7 @@ public class Team {
 	 * @param location the location of the chest - must already be normalised
 	 * @return The team which has claimed that chest
 	 * @see Team#getClaimingTeam(Location) Used to get the team which has claimed
-	 * the provided chest, will return null if that location is not claimed
+	 *      the provided chest, will return null if that location is not claimed
 	 */
 	@Deprecated
 	public static Team getClamingTeam(Location location) {
@@ -231,7 +233,7 @@ public class Team {
 	 * tracks and provides utility methods relating to anchored players of this team
 	 */
 	@Getter
-	private final AnchoredPlayerUuidSetComponent anchoredPlayers = new AnchoredPlayerUuidSetComponent();
+	private final AnchoredPlayerUUIDSetComponent anchoredPlayers = new AnchoredPlayerUUIDSetComponent();
 	/**
 	 * the list of all UUIDS of teams that are allied with this team
 	 */
@@ -359,7 +361,8 @@ public class Team {
 		try {
 			claims.load(storage);
 		} catch (IllegalArgumentException e) {
-			Main.plugin.getLogger().severe("Invalid location stored in the file for the team with the ID " + id + ", " + e.getMessage());
+			Main.plugin.getLogger().severe(
+					"Invalid location stored in the file for the team with the ID " + id + ", " + e.getMessage());
 		}
 
 		level = storage.getInt(StoredTeamValue.LEVEL);
@@ -691,7 +694,7 @@ public class Team {
 	 *
 	 * @param player the player to search for
 	 * @return the team player object for that player [null - player is not in the
-	 * team]
+	 *         team]
 	 */
 	@Nullable
 	public TeamPlayer getTeamPlayer(OfflinePlayer player) {
@@ -706,7 +709,7 @@ public class Team {
 	 *
 	 * @param rank the rank to search for
 	 * @return a list of players which have that rank [emtpy list - no players have
-	 * that rank]
+	 *         that rank]
 	 */
 	public List<TeamPlayer> getRank(PlayerRank rank) {
 		return members.getRank(rank);
@@ -722,7 +725,8 @@ public class Team {
 	/**
 	 * This command is used to disband a team, BE CAREFUL, this is irreversible
 	 *
-	 * @param player The player responsible for disbandment [null - initiated by console]
+	 * @param player The player responsible for disbandment [null - initiated by
+	 *               console]
 	 */
 	public void disband(Player player) {
 		DisbandTeamEvent event = new DisbandTeamEvent(this, player);
@@ -738,7 +742,8 @@ public class Team {
 
 		alliesClone.forEach(uuid -> {
 			Team team = Team.getTeam(uuid);
-			if (team != null) team.becomeNeutral(this, false);
+			if (team != null)
+				team.becomeNeutral(this, false);
 		});
 
 		for (TeamPlayer teamPlayer : membersClone) {
@@ -841,7 +846,6 @@ public class Team {
 			newRank = PlayerRank.OWNER;
 		}
 
-
 		final PromotePlayerEvent event = new PromotePlayerEvent(this, promotePlayer, oldRank, newRank);
 
 		Bukkit.getPluginManager().callEvent(event);
@@ -932,7 +936,8 @@ public class Team {
 	}
 
 	@Deprecated
-	@Nullable <T> T getFromEvents(final T original, final T new_, final T deprecated, String warning) {
+	@Nullable
+	<T> T getFromEvents(final T original, final T new_, final T deprecated, String warning) {
 		T retVal = original;
 		if (new_ != null && !retVal.equals(new_)) {
 			retVal = new_;
@@ -960,8 +965,12 @@ public class Team {
 		String prefix = sender.getPrefix(returnTo);
 
 		// Notify third party plugins that a team message is going to be sent
-		TeamSendMessageEvent teamSendMessageEvent = new TeamSendMessageEvent(this, sender, message, format, prefix, recipients);
-		TeamPreMessageEvent deprecatedPreTeamMessageEvent = new TeamPreMessageEvent(this, sender, message, format, prefix, recipients);
+		TeamSendMessageEvent teamSendMessageEvent = new TeamSendMessageEvent(this, sender, message, format, prefix,
+				recipients);
+		@SuppressWarnings("deprecation")
+		// Deprecated event for backwards compatibility with older plugins
+		TeamPreMessageEvent deprecatedPreTeamMessageEvent = new TeamPreMessageEvent(this, sender, message, format,
+				prefix, recipients);
 		Bukkit.getPluginManager().callEvent(teamSendMessageEvent);
 		Bukkit.getPluginManager().callEvent(deprecatedPreTeamMessageEvent);
 
@@ -970,38 +979,48 @@ public class Team {
 			return;
 		}
 
-		message = getFromEvents(message, teamSendMessageEvent.getRawMessage(), deprecatedPreTeamMessageEvent.getRawMessage(), "Team message cannot be null");
-		format = getFromEvents(format, teamSendMessageEvent.getFormat(), deprecatedPreTeamMessageEvent.getFormat(), "Team message format cannot be null");
-		prefix = getFromEvents(prefix, teamSendMessageEvent.getSenderNamePrefix(), deprecatedPreTeamMessageEvent.getSenderNamePrefix(), "The prefix cannot be null");
-		recipients = getFromEvents(members.getClone(), teamSendMessageEvent.getRecipients(), deprecatedPreTeamMessageEvent.getRecipients(), "Team message recipients cannot be null");
+		message = getFromEvents(message, teamSendMessageEvent.getRawMessage(),
+				deprecatedPreTeamMessageEvent.getRawMessage(), "Team message cannot be null");
+		format = getFromEvents(format, teamSendMessageEvent.getFormat(), deprecatedPreTeamMessageEvent.getFormat(),
+				"Team message format cannot be null");
+		prefix = getFromEvents(prefix, teamSendMessageEvent.getSenderNamePrefix(),
+				deprecatedPreTeamMessageEvent.getSenderNamePrefix(), "The prefix cannot be null");
+		recipients = getFromEvents(members.getClone(), teamSendMessageEvent.getRecipients(),
+				deprecatedPreTeamMessageEvent.getRecipients(), "Team message recipients cannot be null");
 
-		String fMessage = MessageManager.format(format,
+		String fMessage = com.booksaw.betterTeams.message.Formatter.setPlaceholders(format,
 				prefix + Objects.requireNonNull(sender.getPlayer().getPlayer()).getDisplayName(),
 				message);
 
 		fMessage = fMessage.replace("$name$", prefix + sender.getPlayer().getPlayer().getName());
 		fMessage = fMessage.replace("$message$", message);
 
-		for (TeamPlayer player : recipients) {
-			if (player.getPlayer().isOnline()) {
-				Objects.requireNonNull(player.getPlayer().getPlayer()).sendMessage(fMessage);
-			}
-		}
+		MessageManager.sendFullMessage(recipients.stream().map(TeamPlayer::getPlayer)
+				.filter(Objects::nonNull)
+				.filter(player -> player instanceof Player && ((Player) player).isOnline())
+				.map(player -> (Player) player)
+				.collect(Collectors.toList()), fMessage, false, true);
 
-		for (CommandSender temp : Main.plugin.chatManagement.spy) {
-			if (temp instanceof Player && getTeamPlayer((Player) temp) != null) {
-				continue;
-			}
+		MessageManager.sendMessage(
+				Main.plugin.chatManagement.spy.stream()
+						.filter(temp -> !(temp instanceof Player) || getTeamPlayer((Player) temp) == null)
+						.collect(Collectors.toList()),
+				sender.getPlayer().getPlayer(),
+				"spy.team",
+				getName(),
+				sender.getPlayer().getPlayer().getName(),
+				message);
 
-			MessageManager.sendMessage(temp, "spy.team", getName(), sender.getPlayer().getPlayer().getName(), message);
-		}
 		if (TEAMMANAGER.isLogChat()) {
-			Main.plugin.getLogger().info(fMessage);
+			MessageManager.sendFullMessage(Bukkit.getConsoleSender(), fMessage, false);
 		}
 
 		// Notify third party plugins that a message has been dispatched
 		Bukkit.getPluginManager().callEvent(new PostTeamSendMessageEvent(this, sender, fMessage, recipients));
-		Bukkit.getPluginManager().callEvent(new TeamMessageEvent(this, sender, fMessage, recipients));
+
+		@SuppressWarnings("deprecation")
+		TeamMessageEvent deprecatedTeamMessageEvent = new TeamMessageEvent(this, sender, fMessage, recipients);
+		Bukkit.getPluginManager().callEvent(deprecatedTeamMessageEvent);
 	}
 
 	private static @NotNull ChatColor getPreviousChatColor(String toTest) {
@@ -1030,7 +1049,8 @@ public class Team {
 	 */
 	private String getChatSyntax(TeamPlayer sender) {
 
-		if (sender != null && sender.getPlayer() != null && sender.getPlayer().isOnline() && (sender.getPlayer().getPlayer() instanceof CommandSender)) {
+		if (sender != null && sender.getPlayer() != null && sender.getPlayer().isOnline()
+				&& (sender.getPlayer().getPlayer() instanceof CommandSender)) {
 			return MessageManager.getMessage(sender.getPlayer().getPlayer(), "chat.syntax");
 		}
 
@@ -1136,7 +1156,9 @@ public class Team {
 			return team;
 		}
 
-		String name = color + MessageManager.getMessage("nametag.syntax", getTag());
+		String name = com.booksaw.betterTeams.message.Formatter
+				.legacySerialize(color + MessageManager.getMessage("nametag.syntax", getTag()));
+
 		int attempt = 0;
 		do {
 			try {
@@ -1210,11 +1232,13 @@ public class Team {
 	 * Used to add an ally for this team
 	 *
 	 * @param otherTeam     the UUID of the new ally
-	 * @param sendPostEvent If you want the post event to be sent. This is useful if you are switching from one relation
+	 * @param sendPostEvent If you want the post event to be sent. This is useful if
+	 *                      you are switching from one relation
 	 *                      to another.
 	 */
 	public void addAlly(UUID otherTeam, boolean sendPostEvent) {
-		if (isAlly(otherTeam)) return;
+		if (isAlly(otherTeam))
+			return;
 
 		RelationType prevRelation = RelationType.NEUTRAL;
 		final Team other = Team.getTeam(otherTeam);
@@ -1237,18 +1261,21 @@ public class Team {
 		}
 
 		if (sendPostEvent)
-			Bukkit.getPluginManager().callEvent(new PostRelationChangeTeamEvent(this, other, prevRelation, RelationType.ALLY));
+			Bukkit.getPluginManager()
+					.callEvent(new PostRelationChangeTeamEvent(this, other, prevRelation, RelationType.ALLY));
 	}
 
 	/**
 	 * Used to add an ally for this team
 	 *
 	 * @param ally          the UUID of the new ally
-	 * @param sendPostEvent If you want the post event to be sent. This is useful if you are switching from one relation
+	 * @param sendPostEvent If you want the post event to be sent. This is useful if
+	 *                      you are switching from one relation
 	 *                      to another.
 	 */
 	public void addAlly(@Nullable Team ally, boolean sendPostEvent) {
-		if (ally == null) return;
+		if (ally == null)
+			return;
 
 		addAlly(ally.getID(), sendPostEvent);
 	}
@@ -1279,7 +1306,8 @@ public class Team {
 	 */
 	@Deprecated
 	public void removeAlly(@Nullable Team ally) {
-		if (ally == null) return;
+		if (ally == null)
+			return;
 		becomeNeutral(ally, true);
 	}
 
@@ -1287,16 +1315,19 @@ public class Team {
 	 * Used to become neutral to a team
 	 *
 	 * @param otherTeam     the team to become neutral to
-	 * @param sendPostEvent If you want the post event to be sent. This is useful if you are switching from one relation
+	 * @param sendPostEvent If you want the post event to be sent. This is useful if
+	 *                      you are switching from one relation
 	 *                      to another.
 	 */
 	public void becomeNeutral(UUID otherTeam, boolean sendPostEvent) {
-		if (!isAlly(otherTeam)) return;
+		if (!isAlly(otherTeam))
+			return;
 
 		final Team other = Team.getTeam(otherTeam);
 
 		RelationType prevRelation = RelationType.ALLY;
-		if (callUserEvent(other, prevRelation, RelationType.NEUTRAL)) return;
+		if (callUserEvent(other, prevRelation, RelationType.NEUTRAL))
+			return;
 
 		allies.remove(this, otherTeam);
 		saveAllies();
@@ -1315,11 +1346,13 @@ public class Team {
 		}
 
 		if (sendPostEvent)
-			Bukkit.getPluginManager().callEvent(new PostRelationChangeTeamEvent(this, other, prevRelation, RelationType.NEUTRAL));
+			Bukkit.getPluginManager()
+					.callEvent(new PostRelationChangeTeamEvent(this, other, prevRelation, RelationType.NEUTRAL));
 	}
 
 	public void becomeNeutral(Team otherTeam, boolean sendPostEvent) {
-		if (otherTeam == null) return;
+		if (otherTeam == null)
+			return;
 		becomeNeutral(otherTeam.getID(), sendPostEvent);
 	}
 
@@ -1340,7 +1373,8 @@ public class Team {
 	 * @return if the team is an ally
 	 */
 	public boolean isAlly(@Nullable Team team) {
-		if (team == null) return false;
+		if (team == null)
+			return false;
 
 		return isAlly(team.getID());
 	}
@@ -1356,7 +1390,8 @@ public class Team {
 	}
 
 	public boolean isNeutral(@Nullable Team team) {
-		if (team == null) return true;
+		if (team == null)
+			return true;
 
 		return isNeutral(team.getID());
 	}
@@ -1377,7 +1412,8 @@ public class Team {
 	 * @param team the team that has sent the request
 	 */
 	public void addAllyRequest(@Nullable Team team) {
-		if (team == null) return;
+		if (team == null)
+			return;
 
 		addAllyRequest(team.getID());
 	}
@@ -1398,7 +1434,8 @@ public class Team {
 	 * @param team the team to remove the ally request for
 	 */
 	public void removeAllyRequest(@Nullable Team team) {
-		if (team == null) return;
+		if (team == null)
+			return;
 
 		removeAllyRequest(team.getID());
 	}
@@ -1420,7 +1457,8 @@ public class Team {
 	 * @return if they have sent an ally request
 	 */
 	public boolean hasRequested(@Nullable Team team) {
-		if (team == null) return false;
+		if (team == null)
+			return false;
 
 		return hasRequested(team.getID());
 	}
@@ -1468,7 +1506,8 @@ public class Team {
 	 */
 	public boolean canDamage(Player player, Player source) {
 		Team team = Team.getTeam(player);
-		if (team == null) return true;
+		if (team == null)
+			return true;
 		return canDamage(team, source);
 	}
 
@@ -1514,7 +1553,8 @@ public class Team {
 	 */
 	public boolean canDamage(Player player) {
 		Team team = Team.getTeam(player);
-		if (team == null) return true;
+		if (team == null)
+			return true;
 		return canDamage(team);
 	}
 
