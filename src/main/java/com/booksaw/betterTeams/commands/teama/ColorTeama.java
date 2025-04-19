@@ -32,7 +32,9 @@ public class ColorTeama extends TeamSelectSubCommand {
 			return new CommandResponse("color.banned");
 		}
 
-		team.setColor(color);
+		if (!team.setColor(color)) {
+			return new CommandResponse("color.cancelled");
+		}
 
 		return new CommandResponse(true, "admin.color.success");
 	}

@@ -198,7 +198,7 @@ public class Formatter {
         return formatted;
     }
 
-    public static @NotNull String parseMulticolor(@Nullable String... args) throws IllegalArgumentException {
+    public static @NotNull String parseMultiColor(@Nullable String... args) throws IllegalArgumentException {
         if (args == null || args.length == 0) {
             return "";
         }
@@ -223,11 +223,11 @@ public class Formatter {
         }
     }
 
-    public static @NotNull String parseMulticolor(@Nullable String text) throws IllegalArgumentException {
+    public static @NotNull String parseMultiColor(@Nullable String text) throws IllegalArgumentException {
         if (text == null || text.isEmpty()) {
             return "";
         }
 
-        return parseMulticolor(text.split(","));
+        return parseMultiColor(text.split(","));
     }
 }

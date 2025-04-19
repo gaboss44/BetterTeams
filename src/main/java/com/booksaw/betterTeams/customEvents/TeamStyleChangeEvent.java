@@ -3,6 +3,7 @@ package com.booksaw.betterTeams.customEvents;
 import org.bukkit.ChatColor;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.booksaw.betterTeams.Team;
 
@@ -13,17 +14,18 @@ import lombok.Getter;
  */
 @Getter
 public class TeamStyleChangeEvent extends TeamEvent {
+    @Nullable
     private ChatColor newTeamStyle;
 
     public TeamStyleChangeEvent(
-        @NotNull Team team,
-        @NotNull ChatColor newTeamStyle) {
+            @NotNull Team team,
+            @Nullable ChatColor newTeamStyle) {
         super(team, true);
         this.newTeamStyle = newTeamStyle;
     }
 
-    public void setNewTeamStyle(@NotNull ChatColor newTeamStyle) {
-        if (newTeamStyle.isColor()) {
+    public void setNewTeamStyle(@Nullable ChatColor newTeamStyle) {
+        if (newTeamStyle != null && newTeamStyle.isColor()) {
             throw new IllegalArgumentException("Team style cannot be a color.");
         }
         this.newTeamStyle = newTeamStyle;

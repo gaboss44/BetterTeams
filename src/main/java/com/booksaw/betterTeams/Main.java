@@ -273,7 +273,8 @@ public class Main extends JavaPlugin {
 				new DescriptionCommand(), new InviteCommand(), new JoinCommand(), new NameCommand(), new OpenCommand(),
 				new InfoCommand(teamCommand), new KickCommand(), new PromoteCommand(), new DemoteCommand(),
 				new HomeCommand(), new SethomeCommand(), new BanCommand(), new UnbanCommand(),
-				new ChatCommand(teamCommand), new ColorCommand(), new MultiColorCommand(), new TitleCommand(), new TopCommand(),
+				new ChatCommand(teamCommand), new ColorCommand(), new MultiColorCommand(), new StyleCommand(),
+				new TitleCommand(), new TopCommand(),
 				new BaltopCommand(), new RankCommand(), new DelHome(), new AllyCommand(), new NeutralCommand(),
 				new AllyChatCommand(teamCommand), new ListCommand(), new WarpCommand(), new SetWarpCommand(),
 				new DelwarpCommand(), new WarpsCommand(), new EchestCommand(), new RankupCommand(), new TagCommand());
@@ -287,7 +288,8 @@ public class Main extends JavaPlugin {
 		}
 
 		ParentCommand chest = new PermissionParentCommand("chest");
-		chest.addSubCommands(new ChestClaimCommand(), new ChestRemoveCommand(), new ChestRemoveallCommand(), new ChestCheckCommand());
+		chest.addSubCommands(new ChestClaimCommand(), new ChestRemoveCommand(), new ChestRemoveallCommand(),
+				new ChestCheckCommand());
 		teamCommand.addSubCommand(chest);
 
 		teamBooksawCommand = new BooksawCommand("team", teamCommand, "betterteams.standard", "All commands for teams",
@@ -299,7 +301,8 @@ public class Main extends JavaPlugin {
 				new VersionTeama("version"), new VersionTeama("debug"), new HomeTeama(), new NameTeama(),
 				new DescriptionTeama(), new OpenTeama(), new InviteTeama(), new CreateTeama(), new JoinTeama(),
 				new LeaveTeama(), new PromoteTeama(), new DemoteTeama(), new WarpTeama(), new SetwarpTeama(),
-				new DelwarpTeama(), new PurgeTeama(), new DisbandTeama(), new ColorTeama(), new EchestTeama(),
+				new DelwarpTeama(), new PurgeTeama(), new DisbandTeama(), new ColorTeama(), new MultiColorTeama(),
+				new StyleTeama(), new EchestTeama(),
 				new SetrankTeama(teamaCommand), new TagTeama(), new TeleportTeama(teamaCommand), new AllyTeama(),
 				new NeutralTeama(), new ImportmessagesTeama());
 

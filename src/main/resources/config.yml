@@ -167,7 +167,7 @@ blacklist:
 # This is a list of characters wich will not be allowed in team names or tags
 #
 # Possible values: [Any characters]
-bannedChars: ',.!"�$%^&*()[]{};:#~\|`�'
+bannedChars: ',.!"�$%^&*()[]{};:#~\|`�<>'
 
 # This is a list of all characters to be allowed in team names or tags
 # - If this is left blank, all characters (except those in bannedChars or color codes) will be allowed in team name
@@ -180,19 +180,21 @@ allowedChars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 #   As 6 is the character for gold, and 4 is the character for red
 # - Note some characters are always banned from colors for being styles, such as bold (l)
 # 
-# Possible Values: any number of: '0123456789abcdef'
+# Possible Values: any number from '0123456789abcdef'
 bannedColors: ''
 
 # This is a list of all banned styles for team names using /team style <style>
-# - List every character, for example to ban bold and italic you would do bannedStyles: 'il'
-#   As i is the character for italic, and l is the character for bold
+# - List every character, for example to ban bold and italic you would do bannedStyles: 'ol'
+#   As 'o' is the character for italic, and 'l' is the character for bold
 #
-# Possible Values: any number of: 'ilmnorqst'
+# Possible Values: any character from 'klmno'
 bannedStyles: ''
 
 # This is used to determine if players can use multiple colors in their team name or tag
-# by using '/team multicolor RRGGBB,RRGGBB,RRGGBB,...' (where RRGGBB is the hex code of the color)
+# by using '/team multicolor RRGGBB RRGGBB RRGGBB ...' (where RRGGBB is the hex code of the color)
 multiColor:
+  # Same as 'colorTeamName' but for team multiColor
+  onTeamName: true
   # Limits the number of colors to be used in a team name or tag
   #   -1 = hard limit will be used (50 colors)
   #    0 = no colors (only the legacy color will be used)
@@ -249,10 +251,18 @@ allowToggleTeamChat: true
 # Possible values: [true, false]
 colorTeamName: true
 
+# Same as colorTeamName, but for team style
+styleTeamName: true
+
 # This option is used to determine the default team color using the color code of the color you want
 # 
 # Possible values: [0-9, a-f]
 defaultColor: 6
+
+# This option is used to determine the default team style using the format code of the style you want
+# 
+# Possible values: [klmno]
+defaultStyle: ''
 
 # This is used to determine how long of a delay should happen before the user is teleported when using /team home
 # - If this is set to 0 there will be no delay when teleporting

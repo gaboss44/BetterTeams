@@ -342,32 +342,19 @@ public class Team {
 		open = storage.getBoolean(StoredTeamValue.OPEN);
 		pvp = storage.getBoolean(StoredTeamValue.PVP);
 
-		String colorStr = storage.getString(StoredTeamValue.COLOR);
-		String styleStr = storage.getString(StoredTeamValue.STYLE);
-		String defaultColorStr = Main.plugin.getConfig().getString("defaultColor", "6");
+		final String colorStr = Optional.ofNullable(storage.getString(StoredTeamValue.COLOR))
+				.orElse(Main.plugin.getConfig().getString("defaultColor", "6"));
+		final ChatColor color = !colorStr.isEmpty()
+				? ChatColor.getByChar(colorStr.charAt(0))
+				: null;
+		this.color = color != null && color.isColor() ? color : ChatColor.GOLD;
 
-		if (colorStr == null || colorStr.isEmpty()) {
-			colorStr = defaultColorStr;
-		}
-
-		ChatColor color = ChatColor.getByChar(colorStr.charAt(0));
-		ChatColor style = null;
-		if (styleStr != null && !styleStr.isEmpty() && !styleStr.equalsIgnoreCase("none")) {
-			style = ChatColor.getByChar(styleStr.charAt(0));
-		}
-
-		if (color == null) {
-			this.color = ChatColor.GOLD;
-			this.style = style;
-		} else if (color.isColor()) {
-			this.color = color;
-			this.style = style;
-		} else {
-			this.color = ChatColor.GOLD;
-			if (styleStr != null && !styleStr.isEmpty() && styleStr.equalsIgnoreCase("none")) {
-				this.style = color;
-			}
-		}
+		final String styleStr = Optional.ofNullable(storage.getString(StoredTeamValue.STYLE))
+				.orElse(Main.plugin.getConfig().getString("defaultStyle", ""));
+		final ChatColor style = !styleStr.isEmpty()
+				? ChatColor.getByChar(styleStr.charAt(0))
+				: null;
+		this.style = style != null && style.isFormat() ? style : null;
 
 		multiColor = new MultiColor(this);
 
@@ -446,8 +433,19 @@ public class Team {
 		storage.set(StoredTeamValue.HOME, "");
 		rank = -1;
 
-		color = ChatColor.getByChar(Main.plugin.getConfig().getString("defaultColor").charAt(0));
-		storage.set(StoredTeamValue.COLOR, color.getChar());
+		String defaultColorStr = Main.plugin.getConfig().getString("defaultColor", "6");
+		final ChatColor defaultColor = !defaultColorStr.isEmpty()
+				? ChatColor.getByChar(defaultColorStr.charAt(0))
+				: null;
+		this.color = defaultColor != null && defaultColor.isColor() ? defaultColor : ChatColor.GOLD;
+		storage.set(StoredTeamValue.COLOR, this.color.getChar());
+
+		String defaultStyleStr = Main.plugin.getConfig().getString("defaultStyle", "");
+		final ChatColor defaultStyle = defaultStyleStr != null && !defaultStyleStr.isEmpty()
+				? ChatColor.getByChar(defaultStyleStr.charAt(0))
+				: null;
+		this.style = defaultStyle != null && defaultStyle.isFormat() ? defaultStyle : null;
+		storage.set(StoredTeamValue.STYLE, this.style != null ? this.style.getChar() : "");
 
 		multiColor = new MultiColor();
 		storage.set(StoredTeamValue.MULTICOLOR, "");
@@ -519,9 +517,12 @@ public class Team {
 
 	public String getPrefix() {
 		return ""
-				+ (color != null ? color : "")
-				+ (multiColor != null ? multiColor : "")
-				+ (style != null ? style : "");
+				+ (Main.plugin.getConfig().getBoolean("colorTeamName", true)
+						&& color != null ? color : "")
+				+ (Main.plugin.getConfig().getBoolean("multiColor.onTeamName", true)
+						&& multiColor != null ? multiColor : "")
+				+ (Main.plugin.getConfig().getBoolean("styleTeamName", true)
+						&& style != null ? style : "");
 	}
 
 	/**
@@ -538,10 +539,7 @@ public class Team {
 	}
 
 	public String getDisplayName() {
-		if (Main.plugin.getConfig().getBoolean("colorTeamName")) {
-			return getPrefix() + name;
-		}
-		return name;
+		return getPrefix() + name;
 	}
 
 	public String getTag() {
@@ -549,11 +547,7 @@ public class Team {
 			return getDisplayName();
 		}
 
-		if (Main.plugin.getConfig().getBoolean("colorTeamName")) {
-			return getPrefix() + tag + ChatColor.RESET;
-		}
-
-		return tag;
+		return getPrefix() + tag;
 	}
 
 	public boolean setTag(String tag) {
@@ -597,7 +591,7 @@ public class Team {
 	 *
 	 * @param color the new team color
 	 */
-	public boolean setColor(ChatColor color) {
+	public boolean setColor(@NotNull ChatColor color) {
 		TeamColorChangeEvent event = new TeamColorChangeEvent(this, color);
 		Bukkit.getPluginManager().callEvent(event);
 
@@ -607,7 +601,7 @@ public class Team {
 
 		color = event.getNewTeamColor();
 
-		final ChatColor oldColor = getColor();
+		final ChatColor oldColor = this.color;
 		this.color = color;
 		getStorage().set(StoredTeamValue.COLOR, color.getChar());
 
@@ -623,7 +617,7 @@ public class Team {
 	 *
 	 * @param multiColor the new team multi color
 	 */
-	public boolean setMultiColor(MultiColor multiColor) {
+	public boolean setMultiColor(@NotNull MultiColor multiColor) {
 		TeamMultiColorChangeEvent event = new TeamMultiColorChangeEvent(this, multiColor);
 		Bukkit.getPluginManager().callEvent(event);
 
@@ -633,9 +627,9 @@ public class Team {
 
 		multiColor = event.getNewTeamMultiColor();
 
-		final MultiColor oldMultiColor = getMultiColor();
+		final MultiColor oldMultiColor = this.multiColor;
 		this.multiColor = multiColor;
-		getStorage().set(StoredTeamValue.MULTICOLOR, multiColor.getPrimitive());
+		getStorage().set(StoredTeamValue.MULTICOLOR, multiColor.primitive);
 
 		registerTeamName();
 
@@ -649,7 +643,7 @@ public class Team {
 	 *
 	 * @param style the new team style
 	 */
-	public boolean setStyle(ChatColor style) {
+	public boolean setStyle(@Nullable ChatColor style) {
 		TeamStyleChangeEvent event = new TeamStyleChangeEvent(this, style);
 		Bukkit.getPluginManager().callEvent(event);
 
@@ -659,9 +653,9 @@ public class Team {
 
 		style = event.getNewTeamStyle();
 
-		final ChatColor oldStyle = getStyle();
-		this.style = style;
-		getStorage().set(StoredTeamValue.STYLE, style.getChar());
+		final ChatColor oldStyle = this.style;
+		this.style = style != null ? style : null;
+		getStorage().set(StoredTeamValue.STYLE, (style != null ? style.getChar() : ""));
 
 		registerTeamName();
 

@@ -140,7 +140,10 @@ permissions:
     description: Allows the player to change access to the team color
   betterTeams.multicolor:
     default: true
-    description: Allows the player to change access to the team multicolor
+    description: Allows the player to change the team multicolor
+  betterTeams.style:
+    default: true
+    description: Allows the player to change the team style
   betterTeams.admin.name:
     default: op
     description: gives access to /teama name

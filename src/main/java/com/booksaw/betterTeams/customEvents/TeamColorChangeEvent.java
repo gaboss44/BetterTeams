@@ -11,21 +11,19 @@ import org.jetbrains.annotations.NotNull;
  */
 @Getter
 public class TeamColorChangeEvent extends TeamEvent {
+	@NotNull
 	private ChatColor newTeamColor;
 
-	public TeamColorChangeEvent(@NotNull Team team,
-								@NotNull ChatColor newColor) {
+	public TeamColorChangeEvent(
+			@NotNull Team team,
+			@NotNull ChatColor newColor) {
 		super(team, true);
-
 		this.newTeamColor = newColor;
 	}
 
 	public void setNewTeamColor(@NotNull ChatColor newColor) {
-		if (newColor.isFormat()) {
-			throw new IllegalArgumentException("Team color cannot be a style.");
-		}
-		if (newColor == ChatColor.RESET) {
-			throw new IllegalArgumentException("Team color cannot be reset.");
+		if (!newColor.isColor()) {
+			throw new IllegalArgumentException("Team color must be an actual color.");
 		}
 		this.newTeamColor = newColor;
 	}
