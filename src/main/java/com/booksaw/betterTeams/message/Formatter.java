@@ -1,5 +1,7 @@
 package com.booksaw.betterTeams.message;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,6 +22,7 @@ public class Formatter {
     private static final Pattern HEX_PATTERN = Pattern.compile("&#([A-Fa-f0-9]{6})");
     private static final Pattern LEGACY_TAG_PATTERN = Pattern.compile("[§&]([0-9a-fk-orxA-FK-ORX])");
     private static final Pattern LEGACY_HEX_PATTERN = Pattern.compile("§x(§[0-9a-fA-F]){6}");
+    private static final Pattern MULTICOLOR_PATTERN = Pattern.compile("^[A-Fa-f0-9]{6}$");
 
     private static final MiniMessage MM = MiniMessage.miniMessage();
 
@@ -182,7 +185,7 @@ public class Formatter {
         return PlaceholderAPI.setPlaceholders(player, text);
     }
 
-    public static @Nullable String setPlaceholders(@Nullable String text, Object... replacement) {
+    public static @NotNull String setPlaceholders(@Nullable String text, Object... replacement) {
         if (text == null || text.isEmpty())
             return "";
         if (replacement == null || replacement.length == 0)
@@ -193,5 +196,38 @@ public class Formatter {
             formatted = formatted.replace("{" + i + "}", replacement[i].toString());
         }
         return formatted;
+    }
+
+    public static @NotNull String parseMulticolor(@Nullable String... args) throws IllegalArgumentException {
+        if (args == null || args.length == 0) {
+            return "";
+        }
+
+        List<String> validColors = new ArrayList<>();
+
+        for (String group : args) {
+            if (MULTICOLOR_PATTERN.matcher(group).matches()) {
+                validColors.add(group.toUpperCase());
+            } else {
+                throw new IllegalArgumentException("Invalid color code: " + group);
+            }
+        }
+
+        if (validColors.isEmpty()) {
+            return "";
+        } else if (validColors.size() == 1) {
+            return "<color:#" + validColors.get(0) + ">";
+        } else {
+            return "<gradient:"
+                    + String.join(":", validColors.stream().map(color -> "#" + color).toArray(String[]::new)) + ">";
+        }
+    }
+
+    public static @NotNull String parseMulticolor(@Nullable String text) throws IllegalArgumentException {
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+
+        return parseMulticolor(text.split(","));
     }
 }

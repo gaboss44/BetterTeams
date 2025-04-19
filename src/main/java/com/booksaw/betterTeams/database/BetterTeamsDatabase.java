@@ -39,6 +39,15 @@ public class BetterTeamsDatabase extends Database {
 						+ TableName.TEAM + "(teamID) ON DELETE CASCADE, FOREIGN KEY (team2ID) REFERENCES "
 						+ TableName.TEAM + "(teamID) ON DELETE CASCADE");
 
+		// Add multiColor column if it doesn't exist
+		if (!hasColumn(TableName.TEAM, "multiColor")) {
+			addColumn(TableName.TEAM, "multiColor", "TEXT(20000)", "color", true);
+		}
+
+		// Add style column if it doesn't exist
+		if (!hasColumn(TableName.PLAYERS, "style")) {
+			addColumn(TableName.PLAYERS, "style", "VARCHAR(100)", "multiColor", true);
+		}
 	}
 
 	public PreparedStatement select(String select, TableName from) {
@@ -84,14 +93,15 @@ public class BetterTeamsDatabase extends Database {
 	 * @param orderBy     the order by conditions
 	 * @return The resultSet of the select
 	 */
-	public PreparedStatement selectInnerJoinOrder(String select, TableName table, TableName joinTable, String columToJoin,
-												  String orderBy) {
+	public PreparedStatement selectInnerJoinOrder(String select, TableName table, TableName joinTable,
+			String columToJoin,
+			String orderBy) {
 		return executeQuery("SELECT ? FROM ? INNER JOIN ? on (?) ORDER BY ?;", select, table.toString(),
 				joinTable.toString(), columToJoin, orderBy);
 	}
 
 	public PreparedStatement selectInnerJoinGroupByOrder(String select, TableName table, TableName joinTable,
-														 String columToJoin, String groupBy, String orderBy) {
+			String columToJoin, String groupBy, String orderBy) {
 		return executeQuery("SELECT ? FROM ? INNER JOIN ? on (?) GROUP BY ? ORDER BY ?;", select, table.toString(),
 				joinTable.toString(), columToJoin, groupBy, orderBy);
 	}
@@ -125,7 +135,7 @@ public class BetterTeamsDatabase extends Database {
 	 * @param from   the table
 	 * @param where  the condition
 	 * @return the first returned result, the specified column. Will return "" if an
-	 * error occurs
+	 *         error occurs
 	 */
 	public String getResult(String column, TableName from, String where) {
 
@@ -184,8 +194,9 @@ public class BetterTeamsDatabase extends Database {
 	}
 
 	public void insertRecordIfNotExists(TableName table, String columns, String values) {
-//		executeStatement("IF NOT EXISTS (SELECT * FROM ? WHERE ?) INSERT INTO ? (?) VALUES(?);", table.toString(),
-//				condition, table.toString(), columns, values);
+		// executeStatement("IF NOT EXISTS (SELECT * FROM ? WHERE ?) INSERT INTO ? (?)
+		// VALUES(?);", table.toString(),
+		// condition, table.toString(), columns, values);
 		executeStatement("INSERT IGNORE INTO ? (?) VALUES (?);", table.toString(), columns, values);
 	}
 

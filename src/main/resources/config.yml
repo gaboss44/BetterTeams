@@ -178,10 +178,26 @@ allowedChars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 # This is a list of all banned chat colors for team names using /team color <color>
 # - List every character, for example to ban gold and red you would do bannedColors: '64' 
 #   As 6 is the character for gold, and 4 is the character for red
-# - Note some characters are always banned such as bold (l)
+# - Note some characters are always banned from colors for being styles, such as bold (l)
 # 
 # Possible Values: any number of: '0123456789abcdef'
 bannedColors: ''
+
+# This is a list of all banned styles for team names using /team style <style>
+# - List every character, for example to ban bold and italic you would do bannedStyles: 'il'
+#   As i is the character for italic, and l is the character for bold
+#
+# Possible Values: any number of: 'ilmnorqst'
+bannedStyles: ''
+
+# This is used to determine if players can use multiple colors in their team name or tag
+# by using '/team multicolor RRGGBB,RRGGBB,RRGGBB,...' (where RRGGBB is the hex code of the color)
+multiColor:
+  # Limits the number of colors to be used in a team name or tag
+  #   -1 = hard limit will be used (50 colors)
+  #    0 = no colors (only the legacy color will be used)
+  #    anything higher than 50 = command won't work, as the command is limited to 50 colors
+  limit: 3
 
 # This is the color of the command in the help menu, this can be changed 
 #

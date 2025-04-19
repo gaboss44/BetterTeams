@@ -71,12 +71,20 @@ public class YamlToSql extends Converter {
 
 			String echest = Utils.serializeInventory(inv);
 			echest = echest.replace("\"", "\\\"");
+			boolean multiColorExists = database.hasColumn(TableName.TEAM, "multiColor");
+			boolean styleExists = database.hasColumn(TableName.TEAM, "style");
 			database.insertRecordIfNotExists(TableName.TEAM,
-					"teamID, name, description, open, score, money, home, color, level, tag, pvp",
-					"'" + teamName + "', '" + config.getString("name") + "', '" + config.getString("description") + "', "
+					"teamID, name, description, open, score, money, home, color, "
+							+ (multiColorExists ? "multiColor, " : "")
+							+ (styleExists ? "style, " : "") + "level, tag, pvp",
+					"'" + teamName + "', '" + config.getString("name") + "', '" + config.getString("description")
+							+ "', "
 							+ config.getBoolean("open") + ", " + config.getInt("score") + ", "
 							+ config.getDouble("money") + ", '" + config.getString("home") + "', '"
-							+ config.getString("color") + "', " + config.getInt("level") + ", '"
+							+ config.getString("color") + "', "
+							+ (multiColorExists ? "'" + config.getString("multiColor", "") + "', " : "")
+							+ (styleExists ? "'" + config.getString("style", "") + "', " : "")
+							+ config.getInt("level") + ", '"
 							+ config.getString("tag") + "', " + config.getBoolean("pvp"));
 
 			if (echest != null && !echest.isEmpty()) {
@@ -95,7 +103,8 @@ public class YamlToSql extends Converter {
 			}
 			// bans
 			for (String temp : config.getStringList("bans")) {
-				database.insertRecordIfNotExists(TableName.BANS, "teamID, playerUUID", "'" + teamName + "', '" + temp + "'");
+				database.insertRecordIfNotExists(TableName.BANS, "teamID, playerUUID",
+						"'" + teamName + "', '" + temp + "'");
 			}
 			// players
 			for (String temp : config.getStringList("players")) {
@@ -112,7 +121,8 @@ public class YamlToSql extends Converter {
 			}
 			// warps
 			for (String temp : config.getStringList("warps")) {
-				database.insertRecordIfNotExists(TableName.WARPS, "teamID, warpInfo", "'" + teamName + "', '" + temp + "'");
+				database.insertRecordIfNotExists(TableName.WARPS, "teamID, warpInfo",
+						"'" + teamName + "', '" + temp + "'");
 			}
 
 			current++;

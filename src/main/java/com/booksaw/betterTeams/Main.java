@@ -273,7 +273,7 @@ public class Main extends JavaPlugin {
 				new DescriptionCommand(), new InviteCommand(), new JoinCommand(), new NameCommand(), new OpenCommand(),
 				new InfoCommand(teamCommand), new KickCommand(), new PromoteCommand(), new DemoteCommand(),
 				new HomeCommand(), new SethomeCommand(), new BanCommand(), new UnbanCommand(),
-				new ChatCommand(teamCommand), new ColorCommand(), new TitleCommand(), new TopCommand(),
+				new ChatCommand(teamCommand), new ColorCommand(), new MultiColorCommand(), new TitleCommand(), new TopCommand(),
 				new BaltopCommand(), new RankCommand(), new DelHome(), new AllyCommand(), new NeutralCommand(),
 				new AllyChatCommand(teamCommand), new ListCommand(), new WarpCommand(), new SetWarpCommand(),
 				new DelwarpCommand(), new WarpsCommand(), new EchestCommand(), new RankupCommand(), new TagCommand());

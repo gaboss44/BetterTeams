@@ -78,7 +78,7 @@ public class MessageManager {
 		if (audiences != null) {
 			return Formatter.absoluteTranslate(message);
 		} else {
-			return Formatter.legacyTranslate(message);
+			return Formatter.legacySerialize(message);
 		}
 	}
 

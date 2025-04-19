@@ -1,5 +1,6 @@
 package com.booksaw.betterTeams;
 
+import com.booksaw.betterTeams.color.MultiColor;
 import com.booksaw.betterTeams.customEvents.*;
 import com.booksaw.betterTeams.customEvents.post.*;
 import com.booksaw.betterTeams.exceptions.CancelledEventException;
@@ -268,10 +269,28 @@ public class Team {
 	private boolean pvp = false;
 
 	/**
-	 * The color of the team
+	 * The color of the team name
 	 */
 	@Getter
 	private ChatColor color = null;
+
+	/**
+	 * The MultiColor of the team name.
+	 * <p>
+	 * This is used to create a gradient effect on the
+	 * team name.
+	 * <p>
+	 * Goes right after 'color', therefore overriding it
+	 */
+	@Getter
+	private MultiColor multiColor = null;
+
+	/**
+	 * The style of the team name. Goes last
+	 */
+	@Getter
+	private ChatColor style = null;
+
 	/**
 	 * the rank of the team
 	 */
@@ -324,12 +343,33 @@ public class Team {
 		pvp = storage.getBoolean(StoredTeamValue.PVP);
 
 		String colorStr = storage.getString(StoredTeamValue.COLOR);
+		String styleStr = storage.getString(StoredTeamValue.STYLE);
+		String defaultColorStr = Main.plugin.getConfig().getString("defaultColor", "6");
 
 		if (colorStr == null || colorStr.isEmpty()) {
-			colorStr = "6";
+			colorStr = defaultColorStr;
 		}
 
-		color = ChatColor.getByChar(colorStr.charAt(0));
+		ChatColor color = ChatColor.getByChar(colorStr.charAt(0));
+		ChatColor style = null;
+		if (styleStr != null && !styleStr.isEmpty() && !styleStr.equalsIgnoreCase("none")) {
+			style = ChatColor.getByChar(styleStr.charAt(0));
+		}
+
+		if (color == null) {
+			this.color = ChatColor.GOLD;
+			this.style = style;
+		} else if (color.isColor()) {
+			this.color = color;
+			this.style = style;
+		} else {
+			this.color = ChatColor.GOLD;
+			if (styleStr != null && !styleStr.isEmpty() && styleStr.equalsIgnoreCase("none")) {
+				this.style = color;
+			}
+		}
+
+		multiColor = new MultiColor(this);
 
 		members.load(storage);
 		allies.load(storage);
@@ -405,8 +445,14 @@ public class Team {
 
 		storage.set(StoredTeamValue.HOME, "");
 		rank = -1;
+
 		color = ChatColor.getByChar(Main.plugin.getConfig().getString("defaultColor").charAt(0));
 		storage.set(StoredTeamValue.COLOR, color.getChar());
+
+		multiColor = new MultiColor();
+		storage.set(StoredTeamValue.MULTICOLOR, "");
+
+		storage.set(StoredTeamValue.STYLE, "");
 
 		claims.save(storage);
 		if (owner != null) {
@@ -471,25 +517,29 @@ public class Team {
 		}
 	}
 
+	public String getPrefix() {
+		return ""
+				+ (color != null ? color : "")
+				+ (multiColor != null ? multiColor : "")
+				+ (style != null ? style : "");
+	}
+
 	/**
 	 * Used to get the current name of the team
 	 *
 	 * @param resetTo the color to return to at the end of the string
 	 * @return the name of the team
 	 */
-	public String getDisplayName(ChatColor resetTo) {
+	public String getDisplayName(@Nullable ChatColor resetTo) {
 		if (resetTo == null) {
-			return getName();
+			return name;
 		}
-		if (Main.plugin.getConfig().getBoolean("colorTeamName") && color != null) {
-			return color + name + resetTo;
-		}
-		return name;
+		return getDisplayName() + resetTo;
 	}
 
 	public String getDisplayName() {
-		if (Main.plugin.getConfig().getBoolean("colorTeamName") && color != null) {
-			return color + name;
+		if (Main.plugin.getConfig().getBoolean("colorTeamName")) {
+			return getPrefix() + name;
 		}
 		return name;
 	}
@@ -499,21 +549,21 @@ public class Team {
 			return getDisplayName();
 		}
 
-		if (Main.plugin.getConfig().getBoolean("colorTeamName") && color != null) {
-			return color + tag;
+		if (Main.plugin.getConfig().getBoolean("colorTeamName")) {
+			return getPrefix() + tag + ChatColor.RESET;
 		}
 
 		return tag;
 	}
 
-	public void setTag(String tag) {
+	public boolean setTag(String tag) {
 		final String oldTag = getTag();
 
 		TeamTagChangeEvent event = new TeamTagChangeEvent(this, tag);
 		Bukkit.getPluginManager().callEvent(event);
 
 		if (event.isCancelled()) {
-			throw new IllegalArgumentException("Changing tag was cancelled by another plugin");
+			return false;
 		}
 		tag = event.getNewTeamTag();
 
@@ -523,6 +573,8 @@ public class Team {
 		registerTeamName();
 
 		Bukkit.getPluginManager().callEvent(new PostTeamTagChangeEvent(this, oldTag, getTag()));
+
+		return true;
 	}
 
 	public void setOpen(boolean open) {
@@ -545,12 +597,12 @@ public class Team {
 	 *
 	 * @param color the new team color
 	 */
-	public void setColor(ChatColor color) {
+	public boolean setColor(ChatColor color) {
 		TeamColorChangeEvent event = new TeamColorChangeEvent(this, color);
 		Bukkit.getPluginManager().callEvent(event);
 
 		if (event.isCancelled()) {
-			throw new IllegalArgumentException("Recoloring was cancelled by another plugin");
+			return false;
 		}
 
 		color = event.getNewTeamColor();
@@ -562,6 +614,60 @@ public class Team {
 		registerTeamName();
 
 		Bukkit.getPluginManager().callEvent(new PostTeamColorChangeEvent(this, oldColor, color));
+
+		return true;
+	}
+
+	/**
+	 * Used to change the team multi color
+	 *
+	 * @param multiColor the new team multi color
+	 */
+	public boolean setMultiColor(MultiColor multiColor) {
+		TeamMultiColorChangeEvent event = new TeamMultiColorChangeEvent(this, multiColor);
+		Bukkit.getPluginManager().callEvent(event);
+
+		if (event.isCancelled()) {
+			return false;
+		}
+
+		multiColor = event.getNewTeamMultiColor();
+
+		final MultiColor oldMultiColor = getMultiColor();
+		this.multiColor = multiColor;
+		getStorage().set(StoredTeamValue.MULTICOLOR, multiColor.getPrimitive());
+
+		registerTeamName();
+
+		Bukkit.getPluginManager().callEvent(new PostTeamMultiColorChangeEvent(this, oldMultiColor, multiColor));
+
+		return true;
+	}
+
+	/**
+	 * Used to change the team style
+	 *
+	 * @param style the new team style
+	 */
+	public boolean setStyle(ChatColor style) {
+		TeamStyleChangeEvent event = new TeamStyleChangeEvent(this, style);
+		Bukkit.getPluginManager().callEvent(event);
+
+		if (event.isCancelled()) {
+			return false;
+		}
+
+		style = event.getNewTeamStyle();
+
+		final ChatColor oldStyle = getStyle();
+		this.style = style;
+		getStorage().set(StoredTeamValue.STYLE, style.getChar());
+
+		registerTeamName();
+
+		Bukkit.getPluginManager().callEvent(new PostTeamStyleChangeEvent(this, oldStyle, style));
+
+		return true;
 	}
 
 	/**
@@ -1081,7 +1187,7 @@ public class Team {
 		}
 
 		String name = com.booksaw.betterTeams.message.Formatter
-				.legacySerialize(color + MessageManager.getMessage("nametag.syntax", getTag()));
+				.legacySerialize(MessageManager.getMessage("nametag.syntax", getTag()));
 
 		int attempt = 0;
 		do {

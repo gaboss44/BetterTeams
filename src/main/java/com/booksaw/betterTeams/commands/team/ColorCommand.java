@@ -13,7 +13,10 @@ import java.util.stream.Collectors;
 
 public class ColorCommand extends TeamSubCommand {
 
-	private final Set<Character> alwaysBanned = new HashSet<>(Arrays.asList('l', 'n', 'o', 'k', 'n', 'r'));
+	private final Set<Character> alwaysBanned = Arrays.stream(ChatColor.values())
+			.filter(c -> !c.isColor())
+			.map(ChatColor::getChar)
+			.collect(Collectors.toSet());
 	private final Set<Character> banned = new HashSet<>(alwaysBanned);
 
 	public ColorCommand() {
@@ -40,7 +43,9 @@ public class ColorCommand extends TeamSubCommand {
 			return new CommandResponse("color.banned");
 		}
 
-		team.setColor(color);
+		if (!team.setColor(color)) {
+			return new CommandResponse("color.cancelled");
+		}
 
 		return new CommandResponse(true, "color.success");
 	}
