@@ -240,6 +240,12 @@ permissions:
   betterTeams.admin.color:
     default: op
     description: gives access to the command /teama color
+  betterTeams.admin.multicolor:
+    default: op
+    description: gives access to the command /teama multicolor
+  betterTeams.admin.style:
+    default: op
+    description: gives access to the command /teama style
   betterTeams.admin.disband:
     default: op
     description: gives access to the command /teama disband

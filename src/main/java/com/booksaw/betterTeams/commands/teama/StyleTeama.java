@@ -84,8 +84,11 @@ public class StyleTeama extends TeamSelectSubCommand {
     @Override
     public void onTabComplete(List<String> options, CommandSender sender, String label, String[] args) {
 		if (args.length == 2) {
+            if ("none".startsWith(args[1].toLowerCase())) {
+                options.add("none");
+            }
 			for (ChatColor c : ChatColor.values()) {
-				if (!banned.contains(c.getChar()) && c.name().toLowerCase().startsWith(args[0].toLowerCase())) {
+				if (!banned.contains(c.getChar()) && c.name().toLowerCase().startsWith(args[1].toLowerCase())) {
 					options.add(c.name().toLowerCase());
 				}
 			}
