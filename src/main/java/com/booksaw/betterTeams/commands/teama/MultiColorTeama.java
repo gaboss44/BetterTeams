@@ -70,10 +70,10 @@ public class MultiColorTeama extends TeamSelectSubCommand {
     @Override
     public void onTabComplete(List<String> options, CommandSender sender, String label, String[] args) {
         if (args.length == 2) {
-            if (args[0].isEmpty()) {
+            if (args[1].isEmpty()) {
                 options.add("rrggbb rrggbb rrggbb ...");
             }
-            if ("none".startsWith(args[0].toLowerCase())) {
+            if ("none".startsWith(args[1].toLowerCase())) {
                 options.add("none");
             }
         } else if (args.length == 1) {

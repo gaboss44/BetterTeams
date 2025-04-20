@@ -97,6 +97,9 @@ public class StyleCommand extends TeamSubCommand {
     @Override
     public void onTabComplete(List<String> options, CommandSender sender, String label, String[] args) {
 		if (args.length == 1) {
+            if ("none".startsWith(args[0].toLowerCase())) {
+                options.add("none");
+            }
 			for (ChatColor c : ChatColor.values()) {
 				if (!banned.contains(c.getChar()) && c.name().toLowerCase().startsWith(args[0].toLowerCase())) {
 					options.add(c.name().toLowerCase());
