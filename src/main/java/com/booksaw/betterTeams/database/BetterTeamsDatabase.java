@@ -41,7 +41,7 @@ public class BetterTeamsDatabase extends Database {
 
 		// Add multiColor column if it doesn't exist
 		if (!hasColumn(TableName.TEAM, "multiColor")) {
-			addColumn(TableName.TEAM, "multiColor", "TEXT(2000) DEFAULT ''", "color", true);
+			addColumn(TableName.TEAM, "multiColor", "VARCHAR(2000) DEFAULT ''", "color", true);
 		}
 
 		// Add style column if it doesn't exist
