@@ -280,8 +280,8 @@ admin.bal.success: '&6That teams balance has been changed'
 admin.update: '&4There is a new version of better teams released update here: https://www.spigotmc.org/resources/better-teams.17129/'
 admin.disband.success: '&6That team has been disbanded successfully'
 admin.color.success: '&6That teams color has been changed'
-admin.style.success: '&6That teams style has been changed'
 admin.multicolor.success: '&6That teams multicolor has been changed'
+admin.style.success: '&6That teams style has been changed'
 admin.chest.claim.success: '&6You have claimed that chest on behalf of the team'
 admin.chest.remove.success: '&6You have successfully removed the claim from that chest'
 admin.chest.all.success: '&6All claims removed from that team'
@@ -349,6 +349,8 @@ help.disband: Disband your current team
 help.open: Toggle if the team is invite only
 help.info: View information about the specified player / team
 help.color: Change your teams color
+help.multicolor: Change your teams multicolor
+help.style: Change your teams style
 help.deposit: Deposit money into the teams balance
 help.bal: View your teams balance
 help.withdraw: Withdraw money from the teams balance
@@ -363,6 +365,8 @@ help.allychat: Send a message only to your allies
 helpArg.delhome: ''
 helpArg.echest: ''
 helpArg.color: <color code>
+helpArg.multicolor: <rrggbb codes>
+helpArg.style: <style code>
 helpArg.allychat: '[message]'
 helpArg.description: '[description]'
 helpArg.setwarp: <name> [password]
@@ -419,6 +423,8 @@ command.ban: ban
 command.unban: unban
 command.chat: chat
 command.color: color
+command.multicolor: multicolor
+command.style: style
 command.title: title
 command.top: top
 command.baltop: baltop

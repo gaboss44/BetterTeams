@@ -539,12 +539,12 @@ public class Team {
 	}
 
 	public String getDisplayName() {
-		return getPrefix() + name;
+		return getPrefix() + name + ChatColor.RESET;
 	}
 
 	public String getTag() {
 		if (tag == null || tag.isEmpty()) {
-			return getDisplayName(ChatColor.RESET);
+			return getDisplayName();
 		}
 
 		return getPrefix() + tag + ChatColor.RESET;

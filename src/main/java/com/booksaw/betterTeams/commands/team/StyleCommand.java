@@ -52,7 +52,7 @@ public class StyleCommand extends TeamSubCommand {
 			return new CommandResponse("style.banned");
 		}
 
-		if (!team.setColor(style)) {
+		if (!team.setStyle(style)) {
 			return new CommandResponse("style.cancelled");
 		}
 
