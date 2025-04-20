@@ -5,6 +5,8 @@ import com.booksaw.betterTeams.Team;
 import com.booksaw.betterTeams.TeamPlayer;
 import com.booksaw.betterTeams.message.Formatter;
 import com.booksaw.betterTeams.message.MessageManager;
+
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -125,10 +127,10 @@ public class ChatManagement implements Listener {
 			switch (this) {
 				case NAME:
 					return MessageManager.getMessage(
-							p, "prefixSyntax", team.getDisplayName(), format);
+							p, "prefixSyntax", team.getDisplayName(ChatColor.RESET), format);
 				case TAG:
 					return MessageManager.getMessage(
-							p, "prefixSyntax", team.getColor() + team.getTag(), format);
+							p, "prefixSyntax", team.getTag(ChatColor.RESET), format);
 				default:
 					return format;
 			}

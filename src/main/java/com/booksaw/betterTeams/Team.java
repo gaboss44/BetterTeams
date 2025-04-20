@@ -4,6 +4,7 @@ import com.booksaw.betterTeams.color.MultiColor;
 import com.booksaw.betterTeams.customEvents.*;
 import com.booksaw.betterTeams.customEvents.post.*;
 import com.booksaw.betterTeams.exceptions.CancelledEventException;
+import com.booksaw.betterTeams.message.Formatter;
 import com.booksaw.betterTeams.message.Message;
 import com.booksaw.betterTeams.message.MessageManager;
 import com.booksaw.betterTeams.message.ReferencedFormatMessage;
@@ -27,7 +28,13 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -556,7 +563,15 @@ public class Team {
 	}
 
 	public String getDisplayName() {
-		return getPrefix() + name + ChatColor.RESET;
+		return Formatter.legacySerialize(getPrefix() + name);
+	}
+
+	public String getTag(@Nullable ChatColor resetTo) {
+		if (resetTo == null) {
+			return tag == null || tag.isEmpty() ? name : tag;
+		}
+
+		return getTag() + resetTo;
 	}
 
 	public String getTag() {
@@ -564,7 +579,7 @@ public class Team {
 			return getDisplayName();
 		}
 
-		return getPrefix() + tag + ChatColor.RESET;
+		return Formatter.legacySerialize(getPrefix() + tag);
 	}
 
 	public boolean setTag(String tag) {
@@ -1256,8 +1271,7 @@ public class Team {
 			return team;
 		}
 
-		String name = com.booksaw.betterTeams.message.Formatter
-				.legacySerialize(MessageManager.getMessage("nametag.syntax", getTag()));
+		String name = Formatter.legacySerialize(MessageManager.getMessage("nametag.syntax", getTag(ChatColor.RESET)));
 
 		int attempt = 0;
 		do {
