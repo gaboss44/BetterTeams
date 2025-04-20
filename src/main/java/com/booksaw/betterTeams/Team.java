@@ -1195,7 +1195,7 @@ public class Team {
 			return team;
 		}
 
-		String name = Formatter.legacySerialize(MessageManager.getMessage("nametag.syntax", getTag()));
+		String name = Formatter.legacySerialize(MessageManager.getMessage("nametag.syntax", getTag(ChatColor.RESET)));
 
 		int attempt = 0;
 		do {
