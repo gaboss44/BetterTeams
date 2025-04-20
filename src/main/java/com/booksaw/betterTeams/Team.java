@@ -549,6 +549,14 @@ public class Team {
 		return Formatter.legacySerialize(getPrefix() + name);
 	}
 
+	public String getTag(@Nullable ChatColor resetTo) {
+		if (resetTo == null) {
+			return tag == null || tag.isEmpty() ? name : tag;
+		}
+
+		return getTag() + resetTo;
+	}
+
 	public String getTag() {
 		if (tag == null || tag.isEmpty()) {
 			return getDisplayName();
