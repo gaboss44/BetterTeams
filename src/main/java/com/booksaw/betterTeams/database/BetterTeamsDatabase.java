@@ -41,7 +41,7 @@ public class BetterTeamsDatabase extends Database {
 
 		// Add multiColor column if it doesn't exist
 		if (!hasColumn(TableName.TEAM, "multiColor")) {
-			addColumn(TableName.TEAM, "multiColor", "TEXT(2000) DEFAULT ''", "color", true);
+			addColumn(TableName.TEAM, "multiColor", "VARCHAR(2000) DEFAULT ''", "color", true);
 		}
 
 		// Add style column if it doesn't exist
@@ -49,7 +49,7 @@ public class BetterTeamsDatabase extends Database {
 			addColumn(TableName.TEAM, "style", "CHAR(1) DEFAULT ''", "multiColor", true);
 		}
 
-		// Add anchor columns if it doesn't exist
+		// Add anchor columns if they don't exist
 		if (!hasColumn(TableName.TEAM, "anchor")) {
 			addColumn(TableName.TEAM, "anchor", "BOOLEAN DEFAULT 0", "pvp", true);
 		}

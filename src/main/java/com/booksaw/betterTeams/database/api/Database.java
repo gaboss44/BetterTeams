@@ -7,7 +7,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * API Class to managing databases
@@ -139,16 +138,17 @@ public class Database {
 	 * @param columnName The column to check for.
 	 * @return True if the column exists, false otherwise.
 	 */
-	public boolean hasColumn(TableName tableName, String columnName) {
-		String query = "SHOW COLUMNS FROM " + tableName + " LIKE ?";
+	public boolean hasColumn(TableName table, String column) {
+		String query = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND COLUMN_NAME = ?";
 		try (PreparedStatement ps = connection.prepareStatement(query)) {
-			ps.setString(1, columnName);
+			ps.setString(1, table.toString());
+			ps.setString(2, column);
 			try (ResultSet rs = ps.executeQuery()) {
 				return rs.next();
 			}
 		} catch (SQLException e) {
-			Main.plugin.getLogger().log(Level.SEVERE,
-					"Error checking if column exists: " + tableName + "." + columnName, e);
+			Main.plugin.getLogger().severe("Error checking if column exists: " + table + "." + column);
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -159,10 +159,10 @@ public class Database {
 				? (after ? " AFTER " + referenceColumn : " BEFORE " + referenceColumn)
 				: "";
 
-		String query = "ALTER TABLE " + table.toString() + " ADD COLUMN " + newColumnName + " " + columnDefinition
+		String update = "ALTER TABLE " + table.toString() + " ADD " + newColumnName + " " + columnDefinition
 				+ positionClause;
 
-		executeStatement(query);
+		executeStatement(update);
 	}
 
 	protected void addColumn(TableName table, String newColumnName, String columnDefinition) {
