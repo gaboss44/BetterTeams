@@ -21,7 +21,7 @@ public class MultiColorTeama extends TeamSelectSubCommand {
             if (!team.setMultiColor(new MultiColor())) {
                 return new CommandResponse("multicolor.cancelled");
             }
-            return new CommandResponse(true, "multicolor.success");
+            return new CommandResponse(true, "admin.multicolor.success");
         }
 
         MultiColor multiColor = new MultiColor(Arrays.copyOfRange(args, 1, args.length));

@@ -21,11 +21,11 @@ public class StyleTeama extends TeamSelectSubCommand {
 
     @Override
     public CommandResponse onCommand(CommandSender sender, String label, String[] args, Team team) {
-        if (args[1].equalsIgnoreCase("none")) {
+        if (args.length == 2 && args[1].equalsIgnoreCase("none")) {
             if (!team.setStyle(null)) {
                 return new CommandResponse("style.cancelled");
             }
-            return new CommandResponse(true, "style.success");
+            return new CommandResponse(true, "admin.style.success");
         }
 
 		ChatColor style = null;
@@ -44,7 +44,7 @@ public class StyleTeama extends TeamSelectSubCommand {
 			return new CommandResponse("style.banned");
 		}
 
-		if (!team.setColor(style)) {
+		if (!team.setStyle(style)) {
 			return new CommandResponse("style.cancelled");
 		}
 

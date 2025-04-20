@@ -556,7 +556,7 @@ public class Team {
 	}
 
 	public String getDisplayName() {
-		return getPrefix() + name;
+		return getPrefix() + name + ChatColor.RESET;
 	}
 
 	public String getTag() {
@@ -564,7 +564,7 @@ public class Team {
 			return getDisplayName();
 		}
 
-		return getPrefix() + tag;
+		return getPrefix() + tag + ChatColor.RESET;
 	}
 
 	public boolean setTag(String tag) {
@@ -671,7 +671,7 @@ public class Team {
 		style = event.getNewTeamStyle();
 
 		final ChatColor oldStyle = this.style;
-		this.style = style != null ? style : null;
+		this.style = style;
 		getStorage().set(StoredTeamValue.STYLE, (style != null ? style.getChar() : ""));
 
 		registerTeamName();
