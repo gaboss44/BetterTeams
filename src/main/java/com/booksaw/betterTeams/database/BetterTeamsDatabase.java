@@ -1,6 +1,5 @@
 package com.booksaw.betterTeams.database;
 
-import com.booksaw.betterTeams.Main;
 import com.booksaw.betterTeams.database.api.Database;
 
 import java.sql.PreparedStatement;
@@ -40,25 +39,25 @@ public class BetterTeamsDatabase extends Database {
 						+ TableName.TEAM + "(teamID) ON DELETE CASCADE, FOREIGN KEY (team2ID) REFERENCES "
 						+ TableName.TEAM + "(teamID) ON DELETE CASCADE");
 
-		// Add new anchor columns
-        addAnchorColumnIfNeeded(TableName.TEAM);
-        addAnchorColumnIfNeeded(TableName.PLAYERS);
+		// Add multiColor column if it doesn't exist
+		if (!hasColumn(TableName.TEAM, "multiColor")) {
+			addColumn(TableName.TEAM, "multiColor", "TEXT(2000) DEFAULT ''", "color", true);
+		}
+
+		// Add style column if it doesn't exist
+		if (!hasColumn(TableName.TEAM, "style")) {
+			addColumn(TableName.TEAM, "style", "CHAR(1) DEFAULT ''", "multiColor", true);
+		}
+
+		// Add anchor columns if it doesn't exist
+		if (!hasColumn(TableName.TEAM, "anchor")) {
+			addColumn(TableName.TEAM, "anchor", "BOOLEAN DEFAULT 0", "pvp", true);
+		}
+		
+		if (!hasColumn(TableName.PLAYERS, "anchor")) {
+			addColumn(TableName.PLAYERS, "anchor", "BOOLEAN DEFAULT 0", "title", true);
+		}
 	}
-
-	private void addAnchorColumnIfNeeded(TableName tableName) {
-        String checkColumnQuery = "SHOW COLUMNS FROM " + tableName + " LIKE 'anchor';";
-        String alterTableQuery = "ALTER TABLE " + tableName + " ADD COLUMN anchor BOOLEAN DEFAULT 0;";
-
-        PreparedStatement ps = executeQuery(checkColumnQuery);
-		try {
-			if (!ps.executeQuery().next()) { // No result means non existent table
-				executeStatement(alterTableQuery);
-			}
-		} catch (SQLException e) {
-            Main.plugin.getLogger().severe("Could not set 'anchor' column in table" + tableName);
-			e.printStackTrace();
-        }
-    }
 
 	public PreparedStatement select(String select, TableName from) {
 		return executeQuery("SELECT ? FROM ?", select, from.toString());
@@ -103,14 +102,15 @@ public class BetterTeamsDatabase extends Database {
 	 * @param orderBy     the order by conditions
 	 * @return The resultSet of the select
 	 */
-	public PreparedStatement selectInnerJoinOrder(String select, TableName table, TableName joinTable, String columToJoin,
-												  String orderBy) {
+	public PreparedStatement selectInnerJoinOrder(String select, TableName table, TableName joinTable,
+			String columToJoin,
+			String orderBy) {
 		return executeQuery("SELECT ? FROM ? INNER JOIN ? on (?) ORDER BY ?;", select, table.toString(),
 				joinTable.toString(), columToJoin, orderBy);
 	}
 
 	public PreparedStatement selectInnerJoinGroupByOrder(String select, TableName table, TableName joinTable,
-														 String columToJoin, String groupBy, String orderBy) {
+			String columToJoin, String groupBy, String orderBy) {
 		return executeQuery("SELECT ? FROM ? INNER JOIN ? on (?) GROUP BY ? ORDER BY ?;", select, table.toString(),
 				joinTable.toString(), columToJoin, groupBy, orderBy);
 	}
@@ -144,7 +144,7 @@ public class BetterTeamsDatabase extends Database {
 	 * @param from   the table
 	 * @param where  the condition
 	 * @return the first returned result, the specified column. Will return "" if an
-	 * error occurs
+	 *         error occurs
 	 */
 	public String getResult(String column, TableName from, String where) {
 
@@ -203,8 +203,9 @@ public class BetterTeamsDatabase extends Database {
 	}
 
 	public void insertRecordIfNotExists(TableName table, String columns, String values) {
-//		executeStatement("IF NOT EXISTS (SELECT * FROM ? WHERE ?) INSERT INTO ? (?) VALUES(?);", table.toString(),
-//				condition, table.toString(), columns, values);
+		// executeStatement("IF NOT EXISTS (SELECT * FROM ? WHERE ?) INSERT INTO ? (?)
+		// VALUES(?);", table.toString(),
+		// condition, table.toString(), columns, values);
 		executeStatement("INSERT IGNORE INTO ? (?) VALUES (?);", table.toString(), columns, values);
 	}
 

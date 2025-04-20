@@ -36,6 +36,16 @@ public enum StoredTeamValue {
 	COLOR("color"),
 
 	/**
+	 * The multicolor the team has set
+	 */
+	MULTICOLOR("multiColor"),
+
+	/**
+	 * The style the team has set
+	 */
+	STYLE("style"),
+
+	/**
 	 * The location of the team home (stored as a String)
 	 */
 	HOME("home"),

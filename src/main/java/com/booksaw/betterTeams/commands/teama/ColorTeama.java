@@ -32,7 +32,9 @@ public class ColorTeama extends TeamSelectSubCommand {
 			return new CommandResponse("color.banned");
 		}
 
-		team.setColor(color);
+		if (!team.setColor(color)) {
+			return new CommandResponse("color.cancelled");
+		}
 
 		return new CommandResponse(true, "admin.color.success");
 	}
@@ -44,7 +46,7 @@ public class ColorTeama extends TeamSelectSubCommand {
 
 	@Override
 	public int getMinimumArguments() {
-		return 1;
+		return 2;
 	}
 
 	@Override
@@ -64,7 +66,7 @@ public class ColorTeama extends TeamSelectSubCommand {
 
 	@Override
 	public int getMaximumArguments() {
-		return 1;
+		return 2;
 	}
 
 	@Override
