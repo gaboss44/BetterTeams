@@ -140,13 +140,15 @@ public class Database {
 	 * @return True if the column exists, false otherwise.
 	 */
 	public boolean hasColumn(TableName tableName, String columnName) {
-		String query = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND COLUMN_NAME = ?";
-		try (PreparedStatement ps = executeQuery(query, tableName.toString(), columnName)) {
-			ResultSet rs = ps.executeQuery();
-			return rs.next();
+		String query = "SHOW COLUMNS FROM " + tableName + " LIKE ?;";
+		try (PreparedStatement ps = connection.prepareStatement(query)) {
+			ps.setString(1, columnName);
+			try (ResultSet rs = ps.executeQuery()) {
+				return rs.next();
+			}
 		} catch (SQLException e) {
 			Main.plugin.getLogger().log(Level.SEVERE,
-					"Error checking if column exists: " + tableName.toString() + "." + columnName, e);
+					"Error checking if column exists: " + tableName + "." + columnName, e);
 			return false;
 		}
 	}
@@ -157,10 +159,10 @@ public class Database {
 				? (after ? " AFTER " + referenceColumn : " BEFORE " + referenceColumn)
 				: "";
 
-		String query = "ALTER TABLE " + table.toString() + " ADD COLUMN " + newColumnName + " " + columnDefinition
+		String update = "ALTER TABLE " + table.toString() + " ADD " + newColumnName + " " + columnDefinition
 				+ positionClause;
 
-		executeStatement(query);
+		executeStatement(update);
 	}
 
 	protected void addColumn(TableName table, String newColumnName, String columnDefinition) {
