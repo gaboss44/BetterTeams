@@ -130,7 +130,7 @@ public class ChatManagement implements Listener {
 							p, "prefixSyntax", team.getDisplayName(ChatColor.RESET), format);
 				case TAG:
 					return MessageManager.getMessage(
-							p, "prefixSyntax", team.getTag(ChatColor.RESET), format);
+							p, "prefixSyntax", team.getDisplayTag(ChatColor.RESET), format);
 				default:
 					return format;
 			}

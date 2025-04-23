@@ -24,7 +24,7 @@ public class LeaveCommand extends TeamSubCommand {
 		}
 
 		if (team.removePlayer(teamPlayer.getPlayer())) {
-			return new CommandResponse(true, "leave.success");
+			return new CommandResponse(true, "leave.success", team.getMiniDisplayName());
 		}
 		// event has been cancelled
 		return new CommandResponse(false);

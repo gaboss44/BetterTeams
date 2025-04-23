@@ -23,17 +23,17 @@ public class NeutralTeama extends SubCommand {
 		}
 
 		if (team1 == team2) {
-			return new CommandResponse("admin.neutral.same");
+			return new CommandResponse("admin.neutral.same", team1.getMiniDisplayName(), team2.getMiniDisplayName());
 		}
 
 		if (team1.isNeutral(team2)) {
-			return new CommandResponse("admin.neutral.not");
+			return new CommandResponse("admin.neutral.not", team1.getMiniDisplayName(), team2.getMiniDisplayName());
 		}
 
 		team1.becomeNeutral(team2, false);
 		team2.becomeNeutral(team1, true);
 
-		return new CommandResponse(true, "admin.neutral.success");
+		return new CommandResponse(true, "admin.neutral.success", team1.getMiniDisplayName(), team2.getMiniDisplayName());
 	}
 
 	@Override

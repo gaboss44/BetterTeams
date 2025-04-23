@@ -20,12 +20,12 @@ public class DelwarpTeama extends SubCommand {
 
 		Warp warp = team.getWarp(args[1]);
 		if (warp == null) {
-			return new CommandResponse("warp.nowarp");
+			return new CommandResponse("warp.nowarp", team.getMiniDisplayName(), args[0]);
 		}
 
 		team.delWarp(args[1]);
 
-		return new CommandResponse(true, "delwarp.success");
+		return new CommandResponse(true, "delwarp.success", team.getMiniDisplayName(), args[0]);
 	}
 
 	@Override

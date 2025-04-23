@@ -21,23 +21,23 @@ public class DemoteTeama extends SubCommand {
 
 		Team team = Team.getTeam(p);
 		if (team == null) {
-			return new CommandResponse("admin.inTeam");
+			return new CommandResponse(p, "admin.inTeam");
 		}
 
 		TeamPlayer tp = team.getTeamPlayer(p);
 		if (Objects.requireNonNull(tp).getRank() == PlayerRank.DEFAULT) {
-			return new CommandResponse("admin.demote.min");
+			return new CommandResponse(p, "admin.demote.min", team.getMiniDisplayName());
 		}
 
 		if (tp.getRank() == PlayerRank.OWNER && team.isMaxAdmins()) {
-			return new CommandResponse("admin.demote.maxAdmins");
+			return new CommandResponse(p, "admin.demote.maxAdmins", team.getMiniDisplayName());
 		}
 
 		team.demotePlayer(tp);
 		if (p.isOnline()) {
-			MessageManager.sendMessage(p.getPlayer(), "admin.demote.notify");
+			MessageManager.sendMessage(p.getPlayer(), "admin.demote.notify", team.getMiniDisplayName());
 		}
-		return new CommandResponse(true, "admin.demote.success");
+		return new CommandResponse(true, p, "admin.demote.success", team.getMiniDisplayName());
 	}
 
 	@Override

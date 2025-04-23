@@ -23,9 +23,9 @@ public class StyleTeama extends TeamSelectSubCommand {
     public CommandResponse onCommand(CommandSender sender, String label, String[] args, Team team) {
         if (args.length == 2 && args[1].equalsIgnoreCase("none")) {
             if (!team.setStyle(null)) {
-                return new CommandResponse("style.cancelled");
+                return new CommandResponse("style.cancelled", team.getMiniDisplayName());
             }
-            return new CommandResponse(true, "admin.style.success");
+            return new CommandResponse(true, "admin.style.success", team.getMiniDisplayName());
         }
 
 		ChatColor style = null;
@@ -37,18 +37,18 @@ public class StyleTeama extends TeamSelectSubCommand {
 		if (style == null) {
 			style = ChatColor.getByChar(args[1]);
 			if (style == null || args[1].length() > 1)
-				return new CommandResponse("style.fail");
+				return new CommandResponse("style.fail", team.getMiniDisplayName());
 		}
 
 		if (banned.contains(style.getChar())) {
-			return new CommandResponse("style.banned");
+			return new CommandResponse("style.banned", team.getMiniDisplayName());
 		}
 
 		if (!team.setStyle(style)) {
-			return new CommandResponse("style.cancelled");
+			return new CommandResponse("style.cancelled", team.getMiniDisplayName());
 		}
 
-		return new CommandResponse(true, "admin.style.success");
+		return new CommandResponse(true, "admin.style.success", team.getMiniDisplayName());
     }
 
     @Override

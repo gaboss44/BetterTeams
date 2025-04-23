@@ -4,6 +4,7 @@ import com.booksaw.betterTeams.CommandResponse;
 import com.booksaw.betterTeams.Team;
 import com.booksaw.betterTeams.commands.SubCommand;
 import com.booksaw.betterTeams.message.MessageManager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,32 +21,32 @@ public class JoinTeama extends SubCommand {
 			return new CommandResponse("noPlayer");
 		}
 
-		Team test = Team.getTeam(p);
-		if (test != null) {
-			return new CommandResponse("admin.notInTeam");
-		}
-
 		Team team = Team.getTeam(args[0]);
 		if (team == null) {
-			return new CommandResponse("notTeam");
+			return new CommandResponse(p, "notTeam");
+		}
+
+		Team temp = Team.getTeam(p);
+		if (temp != null) {
+			// replacement is provided in case team display name is wanted
+			return new CommandResponse(p, "admin.notInTeam", temp.getMiniDisplayName());
 		}
 
 		if (team.isBanned(p)) {
-			return new CommandResponse("admin.join.banned");
+			return new CommandResponse(p, "admin.join.banned", team.getMiniDisplayName());
 		}
 
 		int limit = team.getTeamLimit();
 
 		if (limit > 0 && limit <= team.getMembers().size()) {
-			return new CommandResponse("admin.join.full");
+			return new CommandResponse(p, "admin.join.full", team.getMiniDisplayName());
 		}
 
 		if (team.join(p)) {
-			MessageManager.sendMessage(p, "admin.join.notify", team.getDisplayName());
-
-			return new CommandResponse(true, "admin.join.success");
+			MessageManager.sendMessage(p, "admin.join.notify", team.getMiniDisplayName());
+			return new CommandResponse(true, p, "admin.join.success", team.getMiniDisplayName());
 		}
-		return new CommandResponse("admin.cancel");
+		return new CommandResponse(p, "admin.cancel", team.getMiniDisplayName());
 	}
 
 	@Override

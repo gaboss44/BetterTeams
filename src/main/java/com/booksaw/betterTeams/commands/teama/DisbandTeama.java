@@ -13,12 +13,17 @@ public class DisbandTeama extends TeamSelectSubCommand {
 
 	@Override
 	public CommandResponse onCommand(CommandSender sender, String label, String[] args, Team team) {
+		String miniDisplayName = null;
 		if (sender instanceof Player) {
 			team.disband((Player) sender);
 		} else {
+			miniDisplayName = team.getMiniDisplayName();
 			team.disband();
 		}
 
+		if (miniDisplayName != null && !miniDisplayName.isEmpty()) {
+			return new CommandResponse(true, "admin.disband.success", miniDisplayName);
+		}
 		return new CommandResponse(true, "admin.disband.success");
 	}
 

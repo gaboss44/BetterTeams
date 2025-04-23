@@ -23,11 +23,11 @@ public class AllyTeama extends SubCommand {
 		}
 
 		if (team1 == team2) {
-			return new CommandResponse("admin.ally.same");
+			return new CommandResponse("admin.ally.same", team1.getMiniDisplayName(), team2.getMiniDisplayName());
 		}
 
 		if (team1.isAlly(team2)) {
-			return new CommandResponse("admin.ally.already");
+			return new CommandResponse("admin.ally.already", team1.getMiniDisplayName(), team2.getMiniDisplayName());
 		}
 
 		team1.addAlly(team2, false);
@@ -35,7 +35,7 @@ public class AllyTeama extends SubCommand {
 		team1.removeAllyRequest(team2);
 		team2.removeAllyRequest(team1);
 
-		return new CommandResponse(true, "admin.ally.success");
+		return new CommandResponse(true, "admin.ally.success", team1.getMiniDisplayName(), team2.getMiniDisplayName());
 	}
 
 	@Override
@@ -77,6 +77,5 @@ public class AllyTeama extends SubCommand {
 			addTeamStringList(options, args[1]);
 		}
 	}
-
 
 }

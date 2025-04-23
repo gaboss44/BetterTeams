@@ -1,7 +1,13 @@
 package com.booksaw.betterTeams;
 
+import com.booksaw.betterTeams.message.Formatter;
 import com.booksaw.betterTeams.message.Message;
+import com.booksaw.betterTeams.message.MessageManager;
 import com.booksaw.betterTeams.message.ReferenceMessage;
+import com.booksaw.betterTeams.message.ReferencedFormatMessage;
+import com.booksaw.betterTeams.message.StaticMessage;
+
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -29,9 +35,22 @@ public class CommandResponse {
 	 * @param success if the command was successful
 	 * @param message the reference for the message to send to the user
 	 */
-	public CommandResponse(boolean success, String message) {
+	public CommandResponse(boolean success, String reference) {
 		this.success = success;
-		this.message = new ReferenceMessage(message);
+		this.message = new ReferenceMessage(reference);
+	}
+
+	public CommandResponse(boolean success, String reference, Object... replacement) {
+		this.success = success;
+		this.message = new ReferencedFormatMessage(reference, replacement);
+	}
+
+	public CommandResponse(boolean success, OfflinePlayer player, String reference) {
+		this(success, new StaticMessage(Formatter.setPlaceholders(MessageManager.getMessage(reference), player)));
+	}
+
+	public CommandResponse(boolean success, OfflinePlayer player, String reference, Object... replacement) {
+		this(success, new StaticMessage(Formatter.setPlaceholders(MessageManager.getMessage(reference, replacement), player)));
 	}
 
 	/**
@@ -39,8 +58,20 @@ public class CommandResponse {
 	 *
 	 * @param message the message to send to the user
 	 */
-	public CommandResponse(String message) {
-		this(false, message);
+	public CommandResponse(String reference) {
+		this(false, reference);
+	}
+
+	public CommandResponse(String reference, Object... replacement) {
+		this(false, reference, replacement);
+	}
+
+	public CommandResponse(OfflinePlayer player, String reference) {
+		this(false, player, reference);
+	}
+
+	public CommandResponse(OfflinePlayer player, String reference, Object... replacement) {
+		this(false, player, reference, replacement);
 	}
 
 	/**

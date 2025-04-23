@@ -5,7 +5,6 @@ import com.booksaw.betterTeams.Main;
 import com.booksaw.betterTeams.Team;
 import com.booksaw.betterTeams.commands.SubCommand;
 import com.booksaw.betterTeams.message.MessageManager;
-import com.booksaw.betterTeams.message.ReferencedFormatMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -26,9 +25,7 @@ public class VersionTeama extends SubCommand {
 		MessageManager.sendMessage(sender, "admin.versionlanguage", MessageManager.getLanguage());
 		MessageManager.sendMessage(sender, "admin.versiononline", Boolean.toString(Bukkit.getOnlineMode()));
 		MessageManager.sendMessage(sender, "admin.versionplayers", Integer.toString(Bukkit.getOnlinePlayers().size()));
-		return new CommandResponse(true,
-				new ReferencedFormatMessage("admin.version", Main.plugin.getDescription().getVersion()));
-
+		return new CommandResponse(true, "admin.version", Main.plugin.getDescription().getVersion());
 
 	}
 

@@ -41,7 +41,7 @@ public class InfoCommand extends SubCommand {
 		infoMessages.add(MessageManager.getMessage("info.score", team.getScore()));
 		infoMessages.add(MessageManager.getMessage("info.money", team.getBalance()));
 		infoMessages.add(MessageManager.getMessage("info.level", team.getLevel()));
-		infoMessages.add(MessageManager.getMessage("info.tag", team.getTag()));
+		infoMessages.add(MessageManager.getMessage("info.tag", team.getMiniDisplayTag()));
 
 		infoMessages.add(getAlliesMessage(team));
 		infoMessages.add(getPlayerList(team, PlayerRank.OWNER));
@@ -138,7 +138,7 @@ public class InfoCommand extends SubCommand {
 			displayTeamInfo(sender, team);
 			return null;
 		}
-		return new CommandResponse("info.needTeam");
+		return new CommandResponse(player, "info.needTeam");
 
 	}
 

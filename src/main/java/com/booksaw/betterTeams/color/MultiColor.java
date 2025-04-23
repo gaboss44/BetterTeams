@@ -27,15 +27,19 @@ public class MultiColor implements Comparable<MultiColor>, Serializable, CharSeq
      */
     public final String value;
 
+    public final int colorQuantity;
+
     public MultiColor() {
         this.primitive = "";
         this.value = "";
+        this.colorQuantity = 0;
     }
 
     public MultiColor(@Nullable String... args) {
         if (args == null || args.length == 0) {
             this.primitive = "";
             this.value = "";
+            this.colorQuantity = 0;
             return;
         }
 
@@ -43,6 +47,7 @@ public class MultiColor implements Comparable<MultiColor>, Serializable, CharSeq
             if (arg.length() != 6) {
                 this.primitive = "";
                 this.value = "";
+                this.colorQuantity = 0;
                 return;
             }
         }
@@ -53,11 +58,13 @@ public class MultiColor implements Comparable<MultiColor>, Serializable, CharSeq
         } catch (IllegalArgumentException e) {
             this.primitive = "";
             this.value = "";
+            this.colorQuantity = 0;
             return;
         }
 
         this.value = tempMiniTag;
         this.primitive = String.join(",", args);
+        this.colorQuantity = args.length;
     }
 
     public MultiColor(@Nullable Team team) {
@@ -66,6 +73,17 @@ public class MultiColor implements Comparable<MultiColor>, Serializable, CharSeq
 
     public @NotNull MultiColor(@Nullable String primitive) {
         this(primitive == null || primitive.isEmpty() ? null : primitive.split(","));
+    }
+
+    public String asCloseString() {
+        switch (colorQuantity) {
+            case 0:
+                return "";
+            case 1:
+                return "</color>";
+            default:
+                return "</gradient>";
+        }
     }
 
     public boolean isEmpty() {

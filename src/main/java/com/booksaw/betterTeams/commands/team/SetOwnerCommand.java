@@ -29,7 +29,7 @@ public class SetOwnerCommand extends TeamSubCommand {
 		TeamPlayer promotePlayer = teamPlayerResult.getPlayer();
 
 		if (Objects.requireNonNull(promotePlayer).getRank() == PlayerRank.OWNER) {
-			return new CommandResponse("setowner.max");
+			return new CommandResponse(promotePlayer.getPlayer(), "setowner.max");
 		}
 
 		team.promotePlayer(promotePlayer);
@@ -38,7 +38,7 @@ public class SetOwnerCommand extends TeamSubCommand {
 			MessageManager.sendMessage((CommandSender) promotePlayer.getPlayer(), "setowner.notify");
 		}
 
-		return new CommandResponse(true, "setowner.success");
+		return new CommandResponse(true, promotePlayer.getPlayer(), "setowner.success");
 	}
 
 	@Override

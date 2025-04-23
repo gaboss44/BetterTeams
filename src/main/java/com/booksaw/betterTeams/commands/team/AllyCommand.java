@@ -5,7 +5,6 @@ import com.booksaw.betterTeams.PlayerRank;
 import com.booksaw.betterTeams.Team;
 import com.booksaw.betterTeams.TeamPlayer;
 import com.booksaw.betterTeams.commands.presets.TeamSubCommand;
-import com.booksaw.betterTeams.message.ReferencedFormatMessage;
 import com.google.common.collect.ImmutableSet;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -33,7 +32,7 @@ public class AllyCommand extends TeamSubCommand {
 			if (requests.length() > 2) {
 				requests = new StringBuilder(requests.substring(0, requests.length() - 2));
 
-				return new CommandResponse(true, new ReferencedFormatMessage("ally.from", requests.toString()));
+				return new CommandResponse(true, "ally.from", requests.toString());
 			} else {
 				return new CommandResponse(true, "ally.noRequests");
 			}
@@ -43,22 +42,22 @@ public class AllyCommand extends TeamSubCommand {
 		if (toAlly == null) {
 			return new CommandResponse("noTeam");
 		} else if (toAlly == team) {
-			return new CommandResponse("ally.self");
+			return new CommandResponse("ally.self", toAlly.getMiniDisplayName());
 		}
 
 		// check if they are already allies
 		if (toAlly.isAlly(team)) {
-			return new CommandResponse("ally.already");
+			return new CommandResponse("ally.already", toAlly.getMiniDisplayName());
 		}
 
 		// checking limit
 		if (team.hasMaxAllies() || toAlly.hasMaxAllies()) {
-			return new CommandResponse("ally.limit");
+			return new CommandResponse("ally.limit", toAlly.getMiniDisplayName());
 		}
 
 		// checking if they have already sent an ally request
 		if (toAlly.hasRequested(team)) {
-			return new CommandResponse("ally.alreadyrequest");
+			return new CommandResponse("ally.alreadyrequest", toAlly.getMiniDisplayName());
 		}
 
 		// checking if an ally request has been sent
@@ -67,13 +66,13 @@ public class AllyCommand extends TeamSubCommand {
 			team.addAlly(toAlly, true);
 			toAlly.removeAllyRequest(team);
 			team.removeAllyRequest(toAlly);
-			return new CommandResponse(true, "ally.success");
+			return new CommandResponse(true, "ally.success", toAlly.getMiniDisplayName());
 		}
 
 		// sending an ally request
 		toAlly.addAllyRequest(team);
 
-		return new CommandResponse(true, "ally.requested");
+		return new CommandResponse(true, "ally.requested", toAlly.getMiniDisplayName());
 	}
 
 	@Override

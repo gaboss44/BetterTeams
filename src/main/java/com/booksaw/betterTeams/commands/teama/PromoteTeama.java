@@ -21,27 +21,27 @@ public class PromoteTeama extends SubCommand {
 
 		Team team = Team.getTeam(p);
 		if (team == null) {
-			return new CommandResponse("admin.inTeam");
+			return new CommandResponse(p, "admin.inTeam");
 		}
 
 		TeamPlayer tp = team.getTeamPlayer(p);
 		if (Objects.requireNonNull(tp).getRank() == PlayerRank.OWNER) {
-			return new CommandResponse("admin.promote.max");
+			return new CommandResponse(p, "admin.promote.max", team.getMiniDisplayName());
 		} else if (tp.getRank() == PlayerRank.ADMIN && Main.plugin.getConfig().getBoolean("singleOwner")) {
-			return new CommandResponse("admin.promote.owner");
+			return new CommandResponse(p, "admin.promote.owner", team.getMiniDisplayName());
 		}
 
 		if (tp.getRank() == PlayerRank.DEFAULT && team.isMaxAdmins()) {
-			return new CommandResponse("admin.promote.maxAdmins");
+			return new CommandResponse(p, "admin.promote.maxAdmins", team.getMiniDisplayName());
 		} else if (tp.getRank() == PlayerRank.ADMIN && team.isMaxOwners()) {
-			return new CommandResponse("admin.promote.maxOwners");
+			return new CommandResponse(p, "admin.promote.maxOwners", team.getMiniDisplayName());
 		}
 
 		team.promotePlayer(tp);
 		if (p.isOnline()) {
-			MessageManager.sendMessage(p.getPlayer(), "admin.promote.notify");
+			MessageManager.sendMessage(p.getPlayer(), "admin.promote.notify", team.getMiniDisplayName());
 		}
-		return new CommandResponse(true, "admin.promote.success");
+		return new CommandResponse(true, p, "admin.promote.success", team.getMiniDisplayName());
 	}
 
 	@Override

@@ -21,16 +21,16 @@ public class SetwarpTeama extends SubCommand {
 		}
 
 		if (team.getWarp(args[1]) != null) {
-			return new CommandResponse("setwarp.exist");
+			return new CommandResponse("setwarp.exist", team.getMiniDisplayName());
 		}
 
 		if (team.getWarps().size() >= Main.plugin.getConfig().getInt("maxWarps")) {
-			return new CommandResponse("admin.setwarp.max");
+			return new CommandResponse("admin.setwarp.max", team.getMiniDisplayName());
 		}
 
 		team.addWarp(new Warp(args[1], ((Player) sender).getLocation(), null));
 
-		return new CommandResponse("admin.setwarp.success");
+		return new CommandResponse("admin.setwarp.success", team.getMiniDisplayName());
 	}
 
 	@Override

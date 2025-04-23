@@ -26,17 +26,18 @@ public class InviteCommand extends TeamSubCommand {
 		}
 
 		if (team.isBanned(toInvite)) {
-			return new CommandResponse("invite.banned");
+			return new CommandResponse(toInvite, "invite.banned");
 		}
 
-		if (Team.getTeam(toInvite) != null) {
-			return new CommandResponse("invite.inTeam");
+		Team temp = Team.getTeam(toInvite);
+		if (temp != null) {
+			return new CommandResponse(toInvite, "invite.inTeam", temp.getMiniDisplayName());
 		}
 
 		int limit = team.getTeamLimit();
 
 		if (limit > 0 && limit <= team.getMembers().size() + team.getInvitedPlayers().size()) {
-			return new CommandResponse("invite.full");
+			return new CommandResponse(toInvite, "invite.full");
 		}
 
 		// player being invited is not in a team
@@ -52,7 +53,7 @@ public class InviteCommand extends TeamSubCommand {
 		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(MessageManager.getMessage("invite.hover", team.getName()))));
 		toInvite.spigot().sendMessage(component);
 
-		return new CommandResponse(true, "invite.success");
+		return new CommandResponse(true, toInvite, "invite.success");
 	}
 
 	@Override

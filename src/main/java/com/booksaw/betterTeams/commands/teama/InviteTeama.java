@@ -4,6 +4,7 @@ import com.booksaw.betterTeams.CommandResponse;
 import com.booksaw.betterTeams.Team;
 import com.booksaw.betterTeams.commands.presets.TeamSelectSubCommand;
 import com.booksaw.betterTeams.message.MessageManager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,24 +21,25 @@ public class InviteTeama extends TeamSelectSubCommand {
 			return new CommandResponse("noPlayer");
 		}
 
-		if (team.isBanned(toInvite)) {
-			return new CommandResponse("invite.banned");
+		Team temp = Team.getTeam(toInvite);
+		if (temp != null) {
+			return new CommandResponse(toInvite, "invite.inTeam", temp.getMiniDisplayName());
 		}
 
-		if (Team.getTeam(toInvite) != null) {
-			return new CommandResponse("invite.inTeam");
+		if (team.isBanned(toInvite)) {
+			return new CommandResponse(toInvite, "admin.invite.banned", team.getMiniDisplayName());
 		}
 
 		int limit = team.getTeamLimit();
 
 		if (limit > 0 && limit <= team.getMembers().size() + team.getInvitedPlayers().size()) {
-			return new CommandResponse("invite.full");
+			return new CommandResponse(toInvite, "admin.invite.full", team.getMiniDisplayName());
 		}
 
 		// player being invited is not in a team
 		team.invite(toInvite.getUniqueId());
-		MessageManager.sendMessage(toInvite, "invite.invite", team.getName());
-		return new CommandResponse(true, "admin.invite.success");
+		MessageManager.sendMessage(toInvite, "invite.invite", team.getMiniDisplayName());
+		return new CommandResponse(true, toInvite, "admin.invite.success", team.getMiniDisplayName());
 	}
 
 	@Override

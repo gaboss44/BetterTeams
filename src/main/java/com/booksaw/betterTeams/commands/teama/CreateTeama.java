@@ -17,16 +17,17 @@ public class CreateTeama extends SubCommand {
 			return response;
 		}
 
-		if (Team.getTeam(args[0]) != null) {
+		Team temp = Team.getTeam(args[0]);
+		if (temp != null) {
 			// team already exists
-			return new CommandResponse("create.exists");
+			return new CommandResponse("create.exists", temp.getMiniDisplayName());
 		}
 
-		Team.getTeamManager().createNewTeam(args[0], null);
+		Team team = Team.getTeamManager().createNewTeam(args[0], null);
 //		Team team = Team.getTeam(args[0]);
 //		Objects.requireNonNull(team).removePlayer((Player) sender);
 
-		return new CommandResponse(true, "admin.create.success");
+		return new CommandResponse(true, "admin.create.success", team.getMiniDisplayName());
 	}
 
 	@Override

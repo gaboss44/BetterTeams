@@ -35,10 +35,10 @@ public class NeutralCommand extends TeamSubCommand {
 
 			// notifying the other team
 
-			Message message = new ReferencedFormatMessage("neutral.reject", team.getDisplayName());
+			Message message = new ReferencedFormatMessage("neutral.reject", team.getMiniDisplayName());
 			toNeutral.getMembers().broadcastMessage(message);
 
-			return new CommandResponse(true, "neutral.requestremove");
+			return new CommandResponse(true, "neutral.requestremove", toNeutral.getMiniDisplayName());
 		}
 
 		// if they are allies

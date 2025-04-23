@@ -31,9 +31,10 @@ public class DisbandCommand extends TeamSubCommand {
 		if ((args.length >= 1 && args[0].equals("confirm")) ||
 				(System.currentTimeMillis() - confirmation.getOrDefault(playerId, 0L) < 10000)) {
 
+			String displayName = team.getMiniDisplayName();
 			team.disband(teamPlayer.getPlayer().getPlayer());
 			confirmation.remove(playerId);
-			return new CommandResponse(true, "disband.success");
+			return new CommandResponse(true, "disband.success", displayName);
 		}
 
 		confirmation.put(playerId, System.currentTimeMillis());

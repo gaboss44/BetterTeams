@@ -44,7 +44,7 @@ public class KickCommand extends TeamSubCommand {
 
 		}
 
-		return new CommandResponse(true, "kick.success");
+		return new CommandResponse(true, player, "kick.success");
 	}
 
 	@Override

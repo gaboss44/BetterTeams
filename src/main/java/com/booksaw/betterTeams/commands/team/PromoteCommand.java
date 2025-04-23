@@ -32,21 +32,21 @@ public class PromoteCommand extends TeamSubCommand {
 		TeamPlayer promotePlayer = teamPlayerResult.getPlayer();
 
 		if (Objects.requireNonNull(promotePlayer).getRank() == PlayerRank.OWNER) {
-			return new CommandResponse("promote.max");
+			return new CommandResponse(promotePlayer.getPlayer(), "promote.max");
 		}
 
 		if (promotePlayer.getRank() == PlayerRank.ADMIN && teamPlayer.getRank() != PlayerRank.OWNER) {
-			return new CommandResponse("promote.noPerm");
+			return new CommandResponse(promotePlayer.getPlayer(), "promote.noPerm");
 		}
 
 		if (promotePlayer.getRank() == PlayerRank.ADMIN && Main.plugin.getConfig().getBoolean("singleOwner")) {
-			return new CommandResponse("setowner.use");
+			return new CommandResponse(promotePlayer.getPlayer(), "setowner.use");
 		}
 
 		if (promotePlayer.getRank() == PlayerRank.DEFAULT && team.isMaxAdmins()) {
-			return new CommandResponse("promote.maxAdmins");
+			return new CommandResponse(promotePlayer.getPlayer(), "promote.maxAdmins");
 		} else if (promotePlayer.getRank() == PlayerRank.ADMIN && team.isMaxOwners()) {
-			return new CommandResponse("promote.maxOwners");
+			return new CommandResponse(promotePlayer.getPlayer(), "promote.maxOwners");
 		}
 
 		team.promotePlayer(promotePlayer);
@@ -54,7 +54,7 @@ public class PromoteCommand extends TeamSubCommand {
 			MessageManager.sendMessage(promotePlayer.getPlayer().getPlayer(), "promote.notify");
 		}
 
-		return new CommandResponse(true, "promote.success");
+		return new CommandResponse(true, promotePlayer.getPlayer(), "promote.success");
 
 	}
 

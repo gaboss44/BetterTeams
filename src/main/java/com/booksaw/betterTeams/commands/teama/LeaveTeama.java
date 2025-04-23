@@ -22,16 +22,16 @@ public class LeaveTeama extends SubCommand {
 
 		Team team = Team.getTeam(p);
 		if (team == null) {
-			return new CommandResponse("admin.inTeam");
+			return new CommandResponse(p, "admin.inTeam");
 		}
 
 		if (team.removePlayer(p)) {
 			if (p.isOnline()) {
-				MessageManager.sendMessage((CommandSender) p, "admin.leave.notify");
+				MessageManager.sendMessage((CommandSender) p, "admin.leave.notify", team.getMiniDisplayName());
 			}
-			return new CommandResponse(true, "admin.leave.success");
+			return new CommandResponse(true, p, "admin.leave.success");
 		}
-		return new CommandResponse("admin.cancel");
+		return new CommandResponse(p, "admin.cancel", team.getMiniDisplayName());
 	}
 
 	@Override

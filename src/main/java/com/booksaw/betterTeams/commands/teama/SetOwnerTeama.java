@@ -25,16 +25,16 @@ public class SetOwnerTeama extends SubCommand {
 
 		Team team = Team.getTeam(p);
 		if (team == null) {
-			return new CommandResponse("admin.inTeam");
+			return new CommandResponse(p, "admin.inTeam");
 		}
 
 		TeamPlayer tp = team.getTeamPlayer(p);
 		if (Objects.requireNonNull(tp).getRank() == PlayerRank.OWNER) {
-			return new CommandResponse("admin.setowner.already");
+			return new CommandResponse(p, "admin.setowner.already", team.getMiniDisplayName());
 		}
 
 		team.promotePlayer(tp);
-		MessageManager.sendMessage(p, "admin.setowner.notify");
+		MessageManager.sendMessage(p, "admin.setowner.notify", team.getMiniDisplayName());
 
 		for (TeamPlayer player : team.getMembers().getClone()) {
 			if (player.getRank() == PlayerRank.OWNER) {
@@ -43,7 +43,8 @@ public class SetOwnerTeama extends SubCommand {
 				}
 				team.demotePlayer(player);
 				if (player.getPlayer().isOnline()) {
-					MessageManager.sendMessage(player.getPlayer().getPlayer(), "admin.setowner.nonotify");
+					MessageManager.sendMessage(player.getPlayer().getPlayer(), "admin.setowner.nonotify",
+							team.getMiniDisplayName());
 				}
 			}
 		}

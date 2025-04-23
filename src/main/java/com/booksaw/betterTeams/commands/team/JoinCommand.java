@@ -21,20 +21,20 @@ public class JoinCommand extends NoTeamSubCommand {
 		}
 
 		if (team.isBanned(p)) {
-			return new CommandResponse("join.banned");
+			return new CommandResponse("join.banned", team.getMiniDisplayName());
 		}
 
 		if (!team.isOpen() && !team.isInvited(p.getUniqueId())) {
-			return new CommandResponse("join.notInvited");
+			return new CommandResponse("join.notInvited", team.getMiniDisplayName());
 		}
 
 		int limit = team.getTeamLimit();
 		if (limit > 0 && limit <= team.getMembers().size()) {
-			return new CommandResponse("join.full");
+			return new CommandResponse("join.full", team.getMiniDisplayName());
 		}
 
 		if (team.join(p)) {
-			return new CommandResponse(true, "join.success");
+			return new CommandResponse(true, "join.success", team.getMiniDisplayName());
 		}
 		// join event was cancelled, whatever the cause of the event should handle
 		// notifying the user

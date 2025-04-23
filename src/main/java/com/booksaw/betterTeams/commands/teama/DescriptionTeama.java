@@ -23,7 +23,7 @@ public class DescriptionTeama extends TeamSelectSubCommand {
 
 		team.setDescription(newDescrip.toString());
 
-		return new CommandResponse(true, "admin.description.success");
+		return new CommandResponse(true, "admin.description.success", team.getMiniDisplayName());
 	}
 
 	@Override

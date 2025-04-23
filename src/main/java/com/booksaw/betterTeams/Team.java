@@ -318,6 +318,7 @@ public class Team {
 	@Getter
 	private int level;
 
+	@Getter
 	private String tag;
 
 	@Getter
@@ -522,14 +523,32 @@ public class Team {
 		}
 	}
 
-	public String getPrefix() {
+	public String getOpenTags() {
 		return ""
 				+ (Main.plugin.getConfig().getBoolean("colorTeamName", true)
-						&& color != null ? color : "")
+						&& color != null ? Formatter.legacyTagToMinimessage(color.asBungee()) : "")
 				+ (Main.plugin.getConfig().getBoolean("multiColor.onTeamName", true)
 						&& multiColor != null ? multiColor : "")
 				+ (Main.plugin.getConfig().getBoolean("styleTeamName", true)
-						&& style != null ? style : "");
+						&& style != null ? Formatter.legacyTagToMinimessage(style.asBungee()) : "");
+	}
+
+	public String getCloseTags() {
+		return ""
+				+ (Main.plugin.getConfig().getBoolean("styleTeamName", true)
+						&& style != null ? Formatter.legacyTagToMinimessage(style.asBungee(), true) : "")
+				+ (Main.plugin.getConfig().getBoolean("multiColor.onTeamName", true)
+						&& multiColor != null ? multiColor.asCloseString() : "")
+				+ (Main.plugin.getConfig().getBoolean("colorTeamName", true)
+						&& color != null ? Formatter.legacyTagToMinimessage(color.asBungee(), true) : "");
+	}
+
+	public String getMiniDisplayName() {
+		return getOpenTags() + name + getCloseTags();
+	}
+
+	public String getDisplayName() {
+		return Formatter.legacySerialize(getMiniDisplayName());
 	}
 
 	/**
@@ -545,24 +564,20 @@ public class Team {
 		return getDisplayName() + resetTo;
 	}
 
-	public String getDisplayName() {
-		return Formatter.legacySerialize(getPrefix() + name);
+	public String getMiniDisplayTag() {
+		return tag != null && !tag.isEmpty() ? getOpenTags() + tag + getCloseTags() : getMiniDisplayName();
 	}
 
-	public String getTag(@Nullable ChatColor resetTo) {
+	public String getDisplayTag() {
+		return Formatter.legacySerialize(getMiniDisplayTag());
+	}
+
+	public String getDisplayTag(@Nullable ChatColor resetTo) {
 		if (resetTo == null) {
 			return tag == null || tag.isEmpty() ? name : tag;
 		}
 
-		return getTag() + resetTo;
-	}
-
-	public String getTag() {
-		if (tag == null || tag.isEmpty()) {
-			return getDisplayName();
-		}
-
-		return Formatter.legacySerialize(getPrefix() + tag);
+		return getDisplayTag() + resetTo;
 	}
 
 	public boolean setTag(String tag) {
@@ -846,7 +861,7 @@ public class Team {
 				}
 				invitedPlayers.remove(uniqueId);
 
-				MessageManager.sendMessage(p, "invite.expired", getName());
+				MessageManager.sendMessage(p, "invite.expired", getDisplayName());
 			}
 		}.runTaskLaterAsynchronously(Main.plugin, invite * 20L);
 
@@ -1195,7 +1210,7 @@ public class Team {
 			return team;
 		}
 
-		String name = Formatter.legacySerialize(MessageManager.getMessage("nametag.syntax", getTag(ChatColor.RESET)));
+		String name = Formatter.legacySerialize(MessageManager.getMessage("nametag.syntax", getDisplayTag(ChatColor.RESET)));
 
 		int attempt = 0;
 		do {
