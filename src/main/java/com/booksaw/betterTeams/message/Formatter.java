@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +19,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 
 public class Formatter {
+
+    private static final String MINITAG_CLOSER = "/";
 
     private static final Pattern HEX_PATTERN = Pattern.compile("&#([A-Fa-f0-9]{6})");
     private static final Pattern LEGACY_TAG_PATTERN = Pattern.compile("[§&]([0-9a-fk-orxA-FK-ORX])");
@@ -52,54 +55,59 @@ public class Formatter {
     }
 
     public static @NotNull String legacyTagToMinimessage(@Nullable ChatColor color) {
+        return legacyTagToMinimessage(color, false);
+    }
+
+    public static @NotNull String legacyTagToMinimessage(@Nullable ChatColor color, boolean closer) {
         if (color == null) {
             return "";
         }
+
         switch (color.getName().toLowerCase()) {
             case "black":
-                return "<black>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "black>";
             case "dark_blue":
-                return "<dark_blue>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "dark_blue>";
             case "dark_green":
-                return "<dark_green>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "dark_green>";
             case "dark_aqua":
-                return "<dark_aqua>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "dark_aqua>";
             case "dark_red":
-                return "<dark_red>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "dark_red>";
             case "dark_purple":
-                return "<dark_purple>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "dark_purple>";
             case "gold":
-                return "<gold>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "gold>";
             case "gray":
-                return "<gray>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "gray>";
             case "dark_gray":
-                return "<dark_gray>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "dark_gray>";
             case "blue":
-                return "<blue>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "blue>";
             case "green":
-                return "<green>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "green>";
             case "aqua":
-                return "<aqua>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "aqua>";
             case "red":
-                return "<red>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "red>";
             case "light_purple":
-                return "<light_purple>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "light_purple>";
             case "yellow":
-                return "<yellow>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "yellow>";
             case "white":
-                return "<white>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "white>";
             case "obfuscated":
-                return "<obfuscated>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "obfuscated>";
             case "bold":
-                return "<bold>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "bold>";
             case "strikethrough":
-                return "<strikethrough>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "strikethrough>";
             case "underline":
-                return "<underlined>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "underlined>";
             case "italic":
-                return "<italic>";
+                return "<" + (closer ? MINITAG_CLOSER : "") + "italic>";
             case "reset":
-                return "<reset>";
+                return "<reset>"; // reset does not have an end tag
             default:
                 return "";
         }
@@ -223,6 +231,10 @@ public class Formatter {
     }
 
     public static @NotNull String setPlaceholders(@Nullable String text, @Nullable Player player) {
+        return setPlaceholders(text, (OfflinePlayer) player);
+    }
+
+    public static @NotNull String setPlaceholders(@Nullable String text, @Nullable OfflinePlayer player) {
         if (text == null || text.isEmpty()) {
             return "";
         }
@@ -232,17 +244,25 @@ public class Formatter {
         return PlaceholderAPI.setPlaceholders(player, text);
     }
 
-    public static @NotNull String setPlaceholders(@Nullable String text, Object... replacement) {
-        if (text == null || text.isEmpty())
+    public static @NotNull String setPlaceholders(@Nullable String text, @Nullable Object... replacement) {
+        if (text == null || text.isEmpty()) {
             return "";
-        if (replacement == null || replacement.length == 0)
-            return text;
-
-        String formatted = text;
-        for (int i = 0; i < replacement.length; i++) {
-            formatted = formatted.replace("{" + i + "}", replacement[i].toString());
         }
-        return formatted;
+        if (replacement == null || replacement.length == 0) {
+            return text;
+        }
+
+        StringBuilder formatted = new StringBuilder(text);
+        for (int i = 0; i < replacement.length; i++) {
+            if (replacement[i] != null) {
+                String placeholder = "{" + i + "}";
+                int index;
+                while ((index = formatted.indexOf(placeholder)) != -1) {
+                    formatted.replace(index, index + placeholder.length(), replacement[i].toString());
+                }
+            }
+        }
+        return formatted.toString();
     }
 
     public static @NotNull String parseMultiColor(@Nullable String... args) throws IllegalArgumentException {

@@ -3,7 +3,6 @@ package com.booksaw.betterTeams.commands.team;
 import com.booksaw.betterTeams.*;
 import com.booksaw.betterTeams.commands.presets.TeamSubCommand;
 import com.booksaw.betterTeams.message.MessageManager;
-import com.booksaw.betterTeams.message.ReferencedFormatMessage;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -18,11 +17,11 @@ public class TagCommand extends TeamSubCommand {
 	public CommandResponse onCommand(TeamPlayer player, String label, String[] args, Team team) {
 
 		if (args.length == 0) {
-			return new CommandResponse(new ReferencedFormatMessage("info.tag", team.getTag()));
+			return new CommandResponse("info.tag", team.getMiniDisplayTag());
 		}
 
 		if (player.getRank().value < getRequiredRank().value) {
-			MessageManager.sendMessage(player.getPlayer().getPlayer(), "info.tag", team.getTag());
+			MessageManager.sendMessage(player.getPlayer().getPlayer(), "info.tag", team.getDisplayTag());
 			return new CommandResponse("tag.noPerm");
 		}
 

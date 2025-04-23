@@ -14,9 +14,9 @@ public class OpenTeama extends TeamSelectSubCommand {
 		team.setOpen(!team.isOpen());
 
 		if (team.isOpen()) {
-			return new CommandResponse(true, "admin.open.successopen");
+			return new CommandResponse(true, "admin.open.successopen", team.getMiniDisplayName());
 		}
-		return new CommandResponse(true, "admin.open.successclose");
+		return new CommandResponse(true, "admin.open.successclose", team.getMiniDisplayName());
 	}
 
 	@Override

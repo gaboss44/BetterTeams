@@ -30,15 +30,15 @@ public class DepositCommand extends TeamSubCommand {
 		}
 
 		if (amount <= 0) {
-			return new CommandResponse("deposit.tooLittle");
+			return new CommandResponse("deposit.tooLittle", amount);
 		}
 
-		final TeamDepositEvent event = new TeamDepositEvent(team, player, amount);
+		final TeamDepositEvent event = new TeamDepositEvent(team, player, Double.valueOf(amount));
 
 		Bukkit.getPluginManager().callEvent(event);
 
 		if (event.isCancelled()) {
-			return new CommandResponse("deposit.fail");
+			return new CommandResponse("deposit.fail", Double.valueOf(amount));
 		}
 
 		if (amount != event.getAmount())
@@ -47,20 +47,20 @@ public class DepositCommand extends TeamSubCommand {
 		double result = team.getMoney() + amount;
 
 		if (result > team.getMaxMoney() && team.getMaxMoney() >= 0) {
-			return new CommandResponse("deposit.max");
+			return new CommandResponse("deposit.max", Double.valueOf(team.getMaxMoney()), Double.valueOf(amount));
 		}
 
 		EconomyResponse response = Main.econ.withdrawPlayer(player.getPlayer(), amount);
 
 		if (!response.transactionSuccess()) {
-			return new CommandResponse("deposit.fail");
+			return new CommandResponse("deposit.fail", Double.valueOf(amount));
 		}
 
 		team.setMoney(result);
 
 		Bukkit.getPluginManager().callEvent(new PostTeamDepositEvent(team, player, amount));
 
-		return new CommandResponse(true, "deposit.success");
+		return new CommandResponse(true, "deposit.success", Double.valueOf(amount));
 	}
 
 	@Override

@@ -5,10 +5,11 @@ import com.booksaw.betterTeams.Main;
 import com.booksaw.betterTeams.Team;
 import com.booksaw.betterTeams.TeamPlayer;
 import com.booksaw.betterTeams.commands.SubCommand;
+import com.booksaw.betterTeams.message.Formatter;
 import com.booksaw.betterTeams.message.MessageManager;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -22,33 +23,34 @@ public class TitleTeama extends SubCommand {
 			return new CommandResponse("admin.inTeam");
 		}
 
-		TeamPlayer toTitle = team.getTeamPlayer(Bukkit.getPlayer(args[0]));
+		Player p = Bukkit.getPlayer(args[0]);
+		TeamPlayer toTitle = team.getTeamPlayer(p);
 
 		if (toTitle == null) {
-			return new CommandResponse("noPlayer");
+			return new CommandResponse("noPlayer", team.getMiniDisplayName());
 		}
 
 		if (args.length == 1) {
 			team.setTitle(toTitle, "");
-			MessageManager.sendMessage(toTitle.getPlayer().getPlayer(), "admin.title.reset");
-			return new CommandResponse(true, "title.success");
+			MessageManager.sendMessage(p, "admin.title.reset", team.getMiniDisplayName());
+			return new CommandResponse(true, p, "title.success", team.getMiniDisplayName());
 		}
 
 		if (args[1].length() > Main.plugin.getConfig().getInt("maxTitleLength")) {
-			return new CommandResponse("title.tooLong");
+			return new CommandResponse(p, "title.tooLong", team.getMiniDisplayName());
 		}
 
 		if (!Team.isValidTeamName(args[1])) {
-			return new CommandResponse("bannedChar");
+			return new CommandResponse(p, "bannedChar", team.getMiniDisplayName());
 		}
 
-		args[1] = ChatColor.translateAlternateColorCodes('&', args[1]);
+		args[1] = Formatter.legacyTranslate(args[1]);
 
 		team.setTitle(toTitle, args[1]);
 
-		MessageManager.sendMessage(toTitle.getPlayer().getPlayer(), "title.change", args[1]);
+		MessageManager.sendMessage(p, "title.change", args[1], team.getMiniDisplayName());
 
-		return new CommandResponse(true, "admin.title.success");
+		return new CommandResponse(true, p, "admin.title.success", args[1], team.getMiniDisplayName());
 	}
 
 	@Override

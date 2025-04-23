@@ -29,7 +29,7 @@ public class WarpTeama extends SubCommand {
 			}
 
 			if (replace.length() == 0) { // JDK 8 doesn't have StringBuilder::isEmpty yet
-				return new CommandResponse("admin.warps.none");
+				return new CommandResponse("admin.warps.none", team.getMiniDisplayName());
 			}
 
 			replace = new StringBuilder(replace.substring(0, replace.length() - 2));

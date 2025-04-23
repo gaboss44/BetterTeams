@@ -22,16 +22,16 @@ public class UnbanCommand extends TeamSubCommand {
 		OfflinePlayer player = Utils.getOfflinePlayer(args[0]);
 
 		if (player == null) {
-			return new CommandResponse("noPlayer");
+			return new CommandResponse(player, "noPlayer");
 		}
 
 		if (!team.isBanned(player)) {
-			return new CommandResponse("unban.not");
+			return new CommandResponse(player, "unban.not");
 		}
 
 		team.unbanPlayer(player);
 		MessageManager.sendMessage((CommandSender) player, "unban.notify", team.getName());
-		return new CommandResponse(true, "unban.success");
+		return new CommandResponse(true, player, "unban.success");
 	}
 
 	@Override

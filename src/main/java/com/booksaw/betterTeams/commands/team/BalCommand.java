@@ -5,7 +5,6 @@ import com.booksaw.betterTeams.PlayerRank;
 import com.booksaw.betterTeams.Team;
 import com.booksaw.betterTeams.TeamPlayer;
 import com.booksaw.betterTeams.commands.presets.TeamSubCommand;
-import com.booksaw.betterTeams.message.ReferencedFormatMessage;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -14,7 +13,7 @@ public class BalCommand extends TeamSubCommand {
 
 	@Override
 	public CommandResponse onCommand(TeamPlayer player, String label, String[] args, Team team) {
-		return new CommandResponse(true, new ReferencedFormatMessage("info.money", team.getBalance()));
+		return new CommandResponse(true,"info.money", team.getBalance());
 	}
 
 	@Override

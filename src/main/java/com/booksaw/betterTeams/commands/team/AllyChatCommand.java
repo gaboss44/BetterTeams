@@ -27,11 +27,11 @@ public class AllyChatCommand extends TeamSubCommand {
 
 			if (player.isInAllyChat()) {
 				player.setAllyChat(false);
-				return new CommandResponse(true, "allychat.disabled");
+				return new CommandResponse(true, player.getPlayer(), "allychat.disabled");
 			} else {
 				player.setTeamChat(false);
 				player.setAllyChat(true);
-				return new CommandResponse(true, "allychat.enabled");
+				return new CommandResponse(true, player.getPlayer(), "allychat.enabled");
 			}
 		}
 

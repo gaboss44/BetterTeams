@@ -6,7 +6,6 @@ import com.booksaw.betterTeams.Team;
 import com.booksaw.betterTeams.TeamPlayer;
 import com.booksaw.betterTeams.commands.presets.TeamSubCommand;
 import com.booksaw.betterTeams.message.MessageManager;
-import com.booksaw.betterTeams.message.ReferencedFormatMessage;
 import com.booksaw.betterTeams.util.TeamUtil;
 import org.bukkit.command.CommandSender;
 
@@ -22,7 +21,7 @@ public class NameCommand extends TeamSubCommand {
 	public CommandResponse onCommand(TeamPlayer teamPlayer, String label, String[] args, Team team) {
 
 		if (args.length == 0) {
-			return new CommandResponse(new ReferencedFormatMessage("name.view", team.getName()));
+			return new CommandResponse("name.view", team.getName());
 		}
 
 		if (teamPlayer.getRank().value < getRequiredRank().value) {

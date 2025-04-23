@@ -29,7 +29,7 @@ public class BanCommand extends TeamSubCommand {
 		Team otherTeam = Team.getTeam(player);
 
 		if (team.isBanned(player)) {
-			return new CommandResponse("ban.already");
+			return new CommandResponse(player, "ban.already");
 		}
 
 		if (team != otherTeam) {
@@ -37,7 +37,7 @@ public class BanCommand extends TeamSubCommand {
 			if (player.isOnline()) {
 				MessageManager.sendMessage(player.getPlayer(), "ban.notify", team.getName());
 			}
-			return new CommandResponse("ban.success");
+			return new CommandResponse(player, "ban.success");
 		}
 
 		TeamPlayer kickedPlayer = team.getTeamPlayer(player);
@@ -59,7 +59,7 @@ public class BanCommand extends TeamSubCommand {
 			}
 		}
 
-		return new CommandResponse(true, "ban.success");
+		return new CommandResponse(true, player, "ban.success");
 	}
 
 	@Override

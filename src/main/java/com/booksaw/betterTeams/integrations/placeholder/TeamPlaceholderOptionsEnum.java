@@ -14,13 +14,20 @@ public enum TeamPlaceholderOptionsEnum {
 	NAME(new NamePlaceholderProvider()), TAG(new TagPlaceholderProvider()),
 	DISPLAYNAME(new DisplayNamePlaceholderProvider()), DESCRIPTION(new DescriptionPlaceholderProvider()),
 	OPEN(new OpenPlaceholderProvider()), SCORE(new ScorePlaceholderProvider()), MONEY(new MoneyPlaceholderProvider()),
-	RANK(new RankPlaceholderProvider()), COLOR(new ColorPlaceholderProvider()), TITLE(new TitlePlaceholderProvider()),
+	RANK(new RankPlaceholderProvider()), COLOR(new ColorPlaceholderProvider()),
+	OPENCOLOR(new OpenColorPlaceholderProvider()), CLOSECOLOR(new CloseColorPlaceholderProvider()),
+	STYLE(new StylePlaceholderProvider()), OPENSTYLE(new OpenStylePlaceholderProvider()),
+	CLOSESTYLE(new CloseStylePlaceholderProvider()),
+	OPENMULTICOLOR(new OpenMultiColorPlaceholderProvider()), CLOSEMULTICOLOR(new CloseMultiColorPlaceholderProvider()),
+	TITLE(new TitlePlaceholderProvider()),
 	ONLINELIST(new OnlineListPlaceholderProvider()), OFFLINELIST(new OfflineListPlaceholderProvider()),
-	ONLINE(new OnlinePlaceholderProvider()), MEMBERS(new MembersPlaceholderProvider()), DEFAULTMEMBERS(new DefaultMembersPlaceholderProvider()),
+	ONLINE(new OnlinePlaceholderProvider()), MEMBERS(new MembersPlaceholderProvider()),
+	DEFAULTMEMBERS(new DefaultMembersPlaceholderProvider()),
 	ADMINS(new AdminsPlaceholderProvider()), OWNERS(new OwnersPlaceholderProvider()),
 	POSITIONSCORE(new PositionScorePlaceholderProvider()), POSITIONBAL(new PositionBalPlaceholderProvider()),
 	POSITIONMEMBERS(new PositionMembersPlaceholderProvider()), LEVEL(new LevelPlaceholderProvider()),
-	MAXMONEY(new MaxMoneyPlaceholderProvider()), MAXMEMBERS(new MaxMembersPlaceholderProvider()), MAXWARPS(new MaxWarpsPlaceholderProvider()),
+	MAXMONEY(new MaxMoneyPlaceholderProvider()), MAXMEMBERS(new MaxMembersPlaceholderProvider()),
+	MAXWARPS(new MaxWarpsPlaceholderProvider()),
 	PVP(new PvpPlaceholderProvider());
 
 	private final IndividualTeamPlaceholderProvider teamProvider;

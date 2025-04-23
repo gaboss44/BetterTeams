@@ -12,18 +12,18 @@ public class NameTeama extends TeamSelectSubCommand {
 
 	@Override
 	public CommandResponse onCommand(CommandSender sender, String label, String[] args, Team team) {
-		CommandResponse response = TeamUtil.verifyTeamName(args[1]);
+		CommandResponse response = TeamUtil.verifyTeamName(args[1], team);
 		if (response != null) {
 			return response;
 		}
 
 		if (Team.getTeam(args[1]) != null) {
-			return new CommandResponse("name.exists");
+			return new CommandResponse("name.exists", args[1], team.getMiniDisplayName());
 		}
 
 		team.setName(args[1], null);
 
-		return new CommandResponse(true, "admin.name.success");
+		return new CommandResponse(true, "admin.name.success", args[1], team.getMiniDisplayName());
 	}
 
 	@Override

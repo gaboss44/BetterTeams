@@ -19,22 +19,22 @@ public class MultiColorTeama extends TeamSelectSubCommand {
     public CommandResponse onCommand(CommandSender sender, String label, String[] args, Team team) {
         if (args.length == 2 && args[1].equalsIgnoreCase("none")) {
             if (!team.setMultiColor(new MultiColor())) {
-                return new CommandResponse("multicolor.cancelled");
+                return new CommandResponse("multicolor.cancelled", team.getMiniDisplayName());
             }
-            return new CommandResponse(true, "admin.multicolor.success");
+            return new CommandResponse(true, "admin.multicolor.success", team.getMiniDisplayName());
         }
 
         MultiColor multiColor = new MultiColor(Arrays.copyOfRange(args, 1, args.length));
 
         if (multiColor.isEmpty()) {
-            return new CommandResponse("multicolor.fail");
+            return new CommandResponse("multicolor.fail", team.getMiniDisplayName());
         }
 
         if (!team.setMultiColor(multiColor)) {
-            return new CommandResponse("multicolor.cancelled");
+            return new CommandResponse("multicolor.cancelled", team.getMiniDisplayName());
         }
 
-        return new CommandResponse(true, "admin.multicolor.success");
+        return new CommandResponse(true, "admin.multicolor.success", team.getMiniDisplayName());
     }
 
     @Override

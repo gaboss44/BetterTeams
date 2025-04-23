@@ -25,18 +25,18 @@ public class ColorTeama extends TeamSelectSubCommand {
 		if (color == null) {
 			color = ChatColor.getByChar(args[1]);
 			if (color == null || args[1].length() > 1)
-				return new CommandResponse("color.fail");
+				return new CommandResponse("color.fail", team.getMiniDisplayName());
 		}
 
 		if (banned.contains(color.getChar())) {
-			return new CommandResponse("color.banned");
+			return new CommandResponse("color.banned", team.getMiniDisplayName());
 		}
 
 		if (!team.setColor(color)) {
-			return new CommandResponse("color.cancelled");
+			return new CommandResponse("color.cancelled", team.getMiniDisplayName());
 		}
 
-		return new CommandResponse(true, "admin.color.success");
+		return new CommandResponse(true, "admin.color.success", team.getMiniDisplayName());
 	}
 
 	@Override

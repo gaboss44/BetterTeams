@@ -1,9 +1,10 @@
 package com.booksaw.betterTeams.commands.teama;
 
 import com.booksaw.betterTeams.CommandResponse;
-import com.booksaw.betterTeams.Main;
 import com.booksaw.betterTeams.Team;
 import com.booksaw.betterTeams.commands.presets.TeamSelectSubCommand;
+import com.booksaw.betterTeams.util.TeamUtil;
+
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -12,21 +13,14 @@ public class TagTeama extends TeamSelectSubCommand {
 
 	@Override
 	public CommandResponse onCommand(CommandSender sender, String label, String[] args, Team team) {
-		if (!Team.isValidTeamName(args[1])) {
-			return new CommandResponse("tag.banned");
-		}
-
-		int max = Main.plugin.getConfig().getInt("maxTagLength");
-		if (max > 55) {
-			max = 55;
-		}
-		if (max != -1 && max < args[0].length() && !args[0].equals(team.getName())) {
-			return new CommandResponse("tag.maxLength");
+		CommandResponse response = TeamUtil.verifyTagName(args[1], team);
+		if (response != null && !args[0].equals(team.getName())) {
+			return response;
 		}
 
 		team.setTag(args[1]);
 
-		return new CommandResponse(true, "admin.tag.success");
+		return new CommandResponse(true, "admin.tag.success", team.getMiniDisplayName());
 	}
 
 	@Override
