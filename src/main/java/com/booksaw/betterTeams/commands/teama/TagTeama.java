@@ -24,7 +24,9 @@ public class TagTeama extends TeamSelectSubCommand {
 			return new CommandResponse("tag.maxLength");
 		}
 
-		team.setTag(args[1]);
+		if (!team.setTag(args[1])) {
+			return new CommandResponse("admin.cancel");
+		}
 
 		return new CommandResponse(true, "admin.tag.success");
 	}

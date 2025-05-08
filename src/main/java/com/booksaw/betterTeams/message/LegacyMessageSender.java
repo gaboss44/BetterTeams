@@ -17,9 +17,9 @@ final class LegacyMessageSender implements MessageSender {
     private final int fadeOut;
 
     LegacyMessageSender() {
-        this.fadeIn = 10;
-        this.stay = 70;
-        this.fadeOut = 20;
+        fadeIn = 10;
+        stay = 70;
+        fadeOut = 20;
     }
 
     @Override

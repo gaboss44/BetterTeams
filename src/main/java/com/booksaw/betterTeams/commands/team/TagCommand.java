@@ -38,7 +38,9 @@ public class TagCommand extends TeamSubCommand {
 			return new CommandResponse("tag.maxLength");
 		}
 
-		team.setTag(args[0]);
+		if (!team.setTag(args[0])) {
+			return new CommandResponse("tag.cancel");
+		}
 
 		return new CommandResponse(true, "tag.success");
 	}

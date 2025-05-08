@@ -2,10 +2,12 @@ package com.booksaw.betterTeams.commands.team;
 
 import com.booksaw.betterTeams.*;
 import com.booksaw.betterTeams.commands.presets.TeamSubCommand;
+import com.booksaw.betterTeams.message.ReferencedFormatMessage;
+import com.google.common.collect.ImmutableSet;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,16 +15,27 @@ import java.util.stream.Collectors;
 
 public class ColorCommand extends TeamSubCommand {
 
-	private final Set<Character> alwaysBanned = new HashSet<>(Arrays.asList('l', 'n', 'o', 'k', 'n', 'r'));
-	private final Set<Character> banned = new HashSet<>(alwaysBanned);
+	private static final Set<Character> notColors = ImmutableSet.of('l', 'n', 'o', 'k', 'n', 'r');
+	private final Set<Character> banned = new HashSet<>(notColors);
 
 	public ColorCommand() {
-		banned.addAll(Main.plugin.getConfig().getString("bannedColors").chars().mapToObj(c -> (char) c)
-				.collect(Collectors.toList()));
+		banned.addAll(Main.plugin.getConfig().getString("bannedColors").chars().mapToObj(c -> (char) c).collect(Collectors.toList()));
+		checkRank = false;
 	}
 
 	@Override
 	public CommandResponse onCommand(TeamPlayer teamPlayer, String label, String[] args, Team team) {
+		if (args.length == 0) {
+			ChatColor color = team.getColor();
+			if (color == null) {
+				return new CommandResponse("color.notSet");
+			}
+			return new CommandResponse(new ReferencedFormatMessage("color.view", team.getColor().asBungee().getName().toUpperCase(), team.getOpenColor(), team.getCloseColor()));
+		}
+
+		if(teamPlayer.getRank().value < getRequiredRank().value) {
+			return new CommandResponse("color.noPerm");
+		}
 
 		ChatColor color = null;
 		try {
@@ -40,7 +53,9 @@ public class ColorCommand extends TeamSubCommand {
 			return new CommandResponse("color.banned");
 		}
 
-		team.setColor(color);
+		if (!team.setColor(color)) {
+			return new CommandResponse("color.cancel");
+		}
 
 		return new CommandResponse(true, "color.success");
 	}
@@ -52,7 +67,7 @@ public class ColorCommand extends TeamSubCommand {
 
 	@Override
 	public int getMinimumArguments() {
-		return 1;
+		return 0;
 	}
 
 	@Override
@@ -79,7 +94,7 @@ public class ColorCommand extends TeamSubCommand {
 	public void onTabComplete(List<String> options, CommandSender sender, String label, String[] args) {
 		if (args.length == 1) {
 			for (ChatColor c : ChatColor.values()) {
-				if (!banned.contains(c.getChar()) && c.name().toLowerCase().startsWith(args[0].toLowerCase())) {
+				if (!banned.contains(c.getChar()) && c.isColor() && c.name().toLowerCase().startsWith(args[0].toLowerCase())) {
 					options.add(c.name().toLowerCase());
 				}
 			}

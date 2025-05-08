@@ -52,6 +52,7 @@ public abstract class Formatter {
 				.tags(TagResolver.resolver(
 						StandardTags.color(),
 						StandardTags.decorations(),
+						StandardTags.shadowColor(),
 						StandardTags.gradient(),
 						StandardTags.rainbow(),
 						StandardTags.reset(),
@@ -110,6 +111,7 @@ public abstract class Formatter {
 				.put("betterteams.chat.format.reset", StandardTags.reset())
 				.put("betterteams.chat.format.legacyreset", LegacyTextTags.RESET)
 				.put("betterteams.chat.format.gradient", StandardTags.gradient())
+				.put("betterteams.chat.format.shadow", StandardTags.shadowColor())
 				.put("betterteams.chat.format.hover", StandardTags.hoverEvent())
 				.put("betterteams.chat.format.click", StandardTags.clickEvent())
 				.put("betterteams.chat.format.insertion", StandardTags.insertion())

@@ -183,6 +183,29 @@ allowedChars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 # Possible Values: any number of: '0123456789abcdef'
 bannedColors: ''
 
+# This is a list of all banned styles for team names using /team style <style>
+# - List every character, for example to ban bold and italic you would do bannedStyles: 'ol'
+#   as 'o' is the character for italic and 'l' is the character for bold
+#
+# Possible Values: any character from 'klmno'
+bannedStyles: ''
+
+# This is used to determine if players can use multiple colors in their team name or tag
+# by using '/team multicolor RRGGBB RRGGBB RRGGBB ...' (where RRGGBB is a valid rgb color code)
+# Note that literal 'RRGGBB' is not an actual rgb color code.
+# The pattern consists of 6 hexadecimal characters (0-9, a-f) and is case insensitive.
+multicolor:
+  # Same as 'colorTeamName' but for team multicolor
+  onTeamName: true
+  # If this is set to true, any argument which does not represent a valid rgb color code will be ignored.
+  # If this is set to false, the command will fail if any of the arguments are not valid rgb color codes.
+  lenientParse: false
+  # Limits the number of rgb color codes to be parsed by the command.
+  # -1 = hard limit will be used (50 colors)
+  #  0 = command only displays the current rgb color codes of the team multicolor
+  # Any value higher than 50 = command will fail, as it's limited to 50 colors
+  limit: 3
+
 # This is the color of the command in the help menu, this can be changed 
 #
 # Possible values: [Any chat color code]

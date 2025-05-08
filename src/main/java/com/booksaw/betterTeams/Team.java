@@ -285,6 +285,23 @@ public class Team {
 	 */
 	@Getter
 	private ChatColor color = null;
+
+	/**
+	 * The multi color of the team
+	 */
+	@Getter
+	private MultiColor multiColor = null;
+
+	/**
+	 * The display name of the team.
+	 */
+	private String displayName = null;
+
+	/**
+	 * The display tag of the team.
+	 */
+	private String displayTag = null;
+
 	/**
 	 * the rank of the team
 	 */
@@ -338,12 +355,17 @@ public class Team {
 		useTeamHomeAsAnchor = storage.getBoolean(StoredTeamValue.ANCHOR);
 
 		String colorStr = Optional.ofNullable(storage.getString(StoredTeamValue.COLOR)).orElse("6");
+		if (colorStr.isEmpty()) colorStr = "6";
+		color = Optional.ofNullable(ChatColor.getByChar(colorStr.charAt(0))).orElse(ChatColor.GOLD);
 
-		if (colorStr.isEmpty()) {
-			colorStr = "6";
+		String multiColorStr = storage.getString(StoredTeamValue.MULTICOLOR);
+		if (multiColorStr != null && !multiColorStr.isEmpty()) {
+			multiColor = MultiColor.fromString(multiColorStr, true);
+		} else {
+			multiColor = MultiColor.empty();
 		}
 
-		color = Optional.ofNullable(ChatColor.getByChar(colorStr.charAt(0))).orElse(ChatColor.GOLD);
+		setupDisplayName();
 
 		members.load(storage);
 		anchoredPlayers.load(storage);
@@ -428,6 +450,11 @@ public class Team {
 		color = Optional.ofNullable(ChatColor.getByChar(colorStr.charAt(0))).orElse(ChatColor.GOLD);
 		storage.set(StoredTeamValue.COLOR, color.getChar());
 
+		multiColor = MultiColor.empty();
+		storage.set(StoredTeamValue.MULTICOLOR, multiColor.join());
+
+		setupDisplayName();
+
 		claims.save(storage);
 		if (owner != null) {
 			members.add(this, new TeamPlayer(owner, PlayerRank.OWNER));
@@ -451,24 +478,26 @@ public class Team {
 	 *
 	 * @param name the new team namexg
 	 */
-	public void setName(String name, Player playerSource) {
-		final String previousName = this.name;
+	public boolean setName(String name, Player playerSource) {
+		final String oldName = this.name;
 
 		TeamNameChangeEvent event = new TeamNameChangeEvent(this, name, playerSource);
 		Bukkit.getPluginManager().callEvent(event);
 
 		if (event.isCancelled()) {
-			throw new IllegalArgumentException("Renaming was cancelled by another plugin");
+			return false;
 		}
-		name = event.getNewTeamName();
+		final String newName = event.getNewTeamName();
 
-		TEAMMANAGER.teamNameChange(this, name);
-		this.name = name;
-		getStorage().set(StoredTeamValue.NAME, name);
+		TEAMMANAGER.teamNameChange(this, newName);
+		this.name = newName;
+		getStorage().set(StoredTeamValue.NAME, newName);
 
 		registerTeamName();
 
-		Bukkit.getPluginManager().callEvent(new PostTeamNameChangeEvent(this, previousName, name, playerSource));
+		Bukkit.getPluginManager().callEvent(new PostTeamNameChangeEvent(this, oldName, newName, playerSource));
+
+		return true;
 	}
 
 	private void registerTeamName() {
@@ -493,22 +522,33 @@ public class Team {
 	}
 
 	public @NotNull String getOpenColor() {
-		return LegacyTextUtils.colorToAdventure(color.asBungee());
+		return color == null ? "" : LegacyTextUtils.colorToAdventure(color.asBungee());
 	}
 
 	public @NotNull String getCloseColor() {
-		return LegacyTextUtils.colorToAdventure(color.asBungee(), true);
+		return color == null ? "" : LegacyTextUtils.colorToAdventure(color.asBungee(), true);
 	}
 
-	public @NotNull String getMiniMessageDisplayName() {
-		return getMiniMessageDisplayName(false);
+	public @NotNull String getOpenMultiColor() {
+		return multiColor == null ? "" : multiColor.toString();
 	}
 
-	public @NotNull String getMiniMessageDisplayName(boolean checkConfig) {
+	public @NotNull String getCloseMultiColor() {
+		return multiColor == null ? "" : multiColor.getCloseTag();
+	}
+
+	public @NotNull String getAdventureDisplayName() {
+		return getAdventureDisplayName(false);
+	}
+
+	public @NotNull String getAdventureDisplayName(boolean checkConfig) {
 		boolean doColor = !checkConfig || Main.plugin.getConfig().getBoolean("colorTeamName", true);
+		boolean doMultiColor = !checkConfig || Main.plugin.getConfig().getBoolean("multicolor.onTeamName", true);
 		return ""
 				+ (doColor ? getOpenColor() : "")
+				+ (doMultiColor ? getOpenMultiColor() : "")
 				+ getName()
+				+ (doMultiColor ? getCloseMultiColor() : "")
 				+ (doColor ? getCloseColor() : "");
 	}
 
@@ -526,9 +566,9 @@ public class Team {
 		if (resetTo == null) {
 			return name;
 		} else if (asAdventure) {
-			return getMiniMessageDisplayName(true) + LegacyTextUtils.colorToAdventure(resetTo.asBungee());
+			return getAdventureDisplayName(true) + LegacyTextUtils.colorToAdventure(resetTo.asBungee());
 		} else {
-			return getDisplayName(false) + resetTo;
+			return displayName + resetTo;
 		}
 	}
 
@@ -538,24 +578,29 @@ public class Team {
 
 	public @NotNull String getDisplayName(boolean asAdventure) {
 		if (asAdventure) {
-			return getMiniMessageDisplayName(true);
+			return getAdventureDisplayName(true);
 		} else {
-			return ""
-					+ (color != null && Main.plugin.getConfig().getBoolean("colorTeamName", true) ? color : "")
-					+ name;
+			return displayName;
 		}
 	}
 
-	public String getMiniMessageTag() {
-		return getMiniMessageTag(false);
+	private void setupDisplayName() {
+		displayName = LegacyTextUtils.parseAdventure(getDisplayName(true));
 	}
 
-	public String getMiniMessageTag(boolean checkConfig) {
+	public String getAdventureTag() {
+		return getAdventureTag(false);
+	}
+
+	public String getAdventureTag(boolean checkConfig) {
 		if (tag == null || tag.isEmpty()) return "";
 		boolean doColor = !checkConfig || Main.plugin.getConfig().getBoolean("colorTeamName", true);
+		boolean doMultiColor = !checkConfig || Main.plugin.getConfig().getBoolean("multicolor.onTeamName", true);
 		return ""
 				+ (doColor ? getOpenColor() : "")
+				+ (doMultiColor ? getOpenMultiColor() : "")
 				+ tag
+				+ (doMultiColor ? getCloseMultiColor() : "")
 				+ (doColor ? getCloseColor() : "");
 	}
 
@@ -564,10 +609,11 @@ public class Team {
 	}
 
 	public String getTag(boolean asAdventure) {
-		if (asAdventure) return getMiniMessageTag(true);
-		else return tag == null || tag.isEmpty() ? "" : ""
-					+ (color != null && Main.plugin.getConfig().getBoolean("colorTeamName", true) ? color : "")
-					+ tag;
+		if (asAdventure) {
+			return getAdventureTag(true);
+		} else {
+			return displayTag;
+		}
 	}
 
 	public String getTag(ChatColor returnTo) {
@@ -579,30 +625,42 @@ public class Team {
 			return getOriginalTag();
 		} else if (tag == null || tag.isEmpty()) {
 			return getDisplayName(asAdventure);
-		} else return getTag(asAdventure) + (asAdventure ? LegacyTextUtils.colorToAdventure(returnTo.asBungee()) : returnTo);
+		} else {
+			return getTag(asAdventure) + (asAdventure ? LegacyTextUtils.colorToAdventure(returnTo.asBungee()) : returnTo);
+		}
+	}
+
+	public void setupDisplayTag() {
+		if (tag == null || tag.isEmpty()) {
+			displayTag = displayName;
+		} else {
+			displayTag = LegacyTextUtils.parseAdventure(getTag(true));
+		}
 	}
 
 	public String getOriginalTag() {
 		return tag != null ? tag : "";
 	}
 
-	public void setTag(String tag) {
+	public boolean setTag(String tag) {
 		final String oldTag = getTag();
 
 		TeamTagChangeEvent event = new TeamTagChangeEvent(this, tag);
 		Bukkit.getPluginManager().callEvent(event);
 
 		if (event.isCancelled()) {
-			throw new IllegalArgumentException("Changing tag was cancelled by another plugin");
+			return false;
 		}
-		tag = Optional.ofNullable(event.getNewTeamTag()).orElse("");
+		final String newTag = Optional.ofNullable(event.getNewTeamTag()).orElse("");
 
-		this.tag = tag;
-		getStorage().set(StoredTeamValue.TAG, tag);
+		this.tag = newTag;
+		getStorage().set(StoredTeamValue.TAG, newTag);
 
 		registerTeamName();
 
-		Bukkit.getPluginManager().callEvent(new PostTeamTagChangeEvent(this, oldTag, getTag(false)));
+		Bukkit.getPluginManager().callEvent(new PostTeamTagChangeEvent(this, oldTag, newTag));
+
+		return true;
 	}
 
 	public void setOpen(boolean open) {
@@ -625,12 +683,12 @@ public class Team {
 	 *
 	 * @param color the new team color
 	 */
-	public void setColor(ChatColor color) {
+	public boolean setColor(ChatColor color) {
 		TeamColorChangeEvent event = new TeamColorChangeEvent(this, color);
 		Bukkit.getPluginManager().callEvent(event);
 
 		if (event.isCancelled()) {
-			throw new IllegalArgumentException("Recoloring was cancelled by another plugin");
+			return false;
 		}
 
 		color = event.getNewTeamColor();
@@ -642,6 +700,35 @@ public class Team {
 		registerTeamName();
 
 		Bukkit.getPluginManager().callEvent(new PostTeamColorChangeEvent(this, oldColor, color));
+
+		return true;
+	}
+
+	/**
+	 * Used to change the team multi color
+	 *
+	 * @param multiColor the new team multi color
+	 */
+	public boolean setMultiColor(MultiColor multiColor) {
+		final MultiColor oldMultiColor = getMultiColor();
+
+		TeamMultiColorChangeEvent event = new TeamMultiColorChangeEvent(this, multiColor);
+		Bukkit.getPluginManager().callEvent(event);
+
+		if (event.isCancelled()) {
+			return false;
+		}
+
+		final MultiColor newMultiColor = event.getNewTeamMultiColor();
+
+		this.multiColor = multiColor;
+		getStorage().set(StoredTeamValue.MULTICOLOR, multiColor.join());
+
+		registerTeamName();
+
+		Bukkit.getPluginManager().callEvent(new PostTeamMultiColorChangeEvent(this, oldMultiColor, newMultiColor));
+
+		return true;
 	}
 
 	/**

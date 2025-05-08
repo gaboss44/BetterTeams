@@ -1,5 +1,6 @@
 package com.booksaw.betterTeams;
 
+import com.booksaw.betterTeams.message.CompositeMessage;
 import com.booksaw.betterTeams.message.Message;
 import com.booksaw.betterTeams.message.ReferenceMessage;
 import org.bukkit.command.CommandSender;
@@ -61,6 +62,15 @@ public class CommandResponse {
 	 */
 	public CommandResponse(Message message) {
 		this(false, message);
+	}
+
+	public CommandResponse(Message... messages) {
+		this(false, messages);
+	}
+
+	public CommandResponse(boolean success, Message... messages) {
+		this.success = success;
+		message = new CompositeMessage(messages);
 	}
 
 	/**
