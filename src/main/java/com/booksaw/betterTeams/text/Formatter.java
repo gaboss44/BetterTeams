@@ -84,7 +84,7 @@ public abstract class Formatter {
 		private static final String BUNGEE_HEX_PERMISSION = "betterteams.chat.format.bungeehex";
 		private static final String STANDARD_HEX_PERMISSION = "betterteams.chat.format.standardhex";
 
-		private static final Map<String, TagResolver> PERMISSIVE_TAG_RESOLVERS = new ImmutableMap.Builder<String, TagResolver>()
+		private static final Map<String, TagResolver> PERMISSIVE_TAG_RESOLVERS_MAP = new ImmutableMap.Builder<String, TagResolver>()
 				.put("betterteams.chat.format.color.*", StandardTags.color())
 				.put("betterteams.chat.format.color.black", TextColorTagResolver.of(NamedTextColor.BLACK))
 				.put("betterteams.chat.format.color.dark_blue", TextColorTagResolver.of(NamedTextColor.DARK_BLUE))
@@ -102,16 +102,16 @@ public abstract class Formatter {
 				.put("betterteams.chat.format.color.light_purple", TextColorTagResolver.of(NamedTextColor.LIGHT_PURPLE))
 				.put("betterteams.chat.format.color.yellow", TextColorTagResolver.of(NamedTextColor.YELLOW))
 				.put("betterteams.chat.format.color.white", TextColorTagResolver.of(NamedTextColor.WHITE))
-				.put("betterteams.chat.format.style.*", StandardTags.decorations())
-				.put("betterteams.chat.format.style.bold", StandardTags.decorations(TextDecoration.BOLD))
-				.put("betterteams.chat.format.style.italic", StandardTags.decorations(TextDecoration.ITALIC))
-				.put("betterteams.chat.format.style.underlined", StandardTags.decorations(TextDecoration.UNDERLINED))
-				.put("betterteams.chat.format.style.strikethrough", StandardTags.decorations(TextDecoration.STRIKETHROUGH))
-				.put("betterteams.chat.format.style.obfuscated", StandardTags.decorations(TextDecoration.OBFUSCATED))
+				.put("betterteams.chat.format.decoration.*", StandardTags.decorations())
+				.put("betterteams.chat.format.decoration.bold", StandardTags.decorations(TextDecoration.BOLD))
+				.put("betterteams.chat.format.decoration.italic", StandardTags.decorations(TextDecoration.ITALIC))
+				.put("betterteams.chat.format.decoration.underlined", StandardTags.decorations(TextDecoration.UNDERLINED))
+				.put("betterteams.chat.format.decoration.strikethrough", StandardTags.decorations(TextDecoration.STRIKETHROUGH))
+				.put("betterteams.chat.format.decoration.obfuscated", StandardTags.decorations(TextDecoration.OBFUSCATED))
 				.put("betterteams.chat.format.reset", StandardTags.reset())
 				.put("betterteams.chat.format.legacyreset", LegacyTextTags.RESET)
 				.put("betterteams.chat.format.gradient", StandardTags.gradient())
-				.put("betterteams.chat.format.shadow", StandardTags.shadowColor())
+				.put("betterteams.chat.format.shadowcolor", StandardTags.shadowColor())
 				.put("betterteams.chat.format.hover", StandardTags.hoverEvent())
 				.put("betterteams.chat.format.click", StandardTags.clickEvent())
 				.put("betterteams.chat.format.insertion", StandardTags.insertion())
@@ -132,7 +132,7 @@ public abstract class Formatter {
 
 		private static TagResolver provideTagResolver(Permissible permissible) {
 			List<TagResolver> resolvers = new ArrayList<>();
-			for (Map.Entry<String, TagResolver> entry : PERMISSIVE_TAG_RESOLVERS.entrySet()) {
+			for (Map.Entry<String, TagResolver> entry : PERMISSIVE_TAG_RESOLVERS_MAP.entrySet()) {
 				if (permissible.hasPermission(entry.getKey())) {
 					resolvers.add(entry.getValue());
 				}

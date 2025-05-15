@@ -26,4 +26,9 @@ public class InvalidRgbColorCodeException extends IllegalArgumentException {
 		super(cause);
 		this.invalid = invalid;
 	}
+	
+	@Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }
 }

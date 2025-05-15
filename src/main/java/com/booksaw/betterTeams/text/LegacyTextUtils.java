@@ -1,22 +1,27 @@
 package com.booksaw.betterTeams.text;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.ChatColor;
+
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.md_5.bungee.api.ChatColor;
 
 public final class LegacyTextUtils {
 
 	private LegacyTextUtils() {}
 
+	static final char SECTION = '\u00A7';
+	static final char AMPERSAND = '&';
+
     private static final Pattern MOJANG_COLOR_PATTERN = Pattern.compile("(?i)&([0-9A-FK-OR])");
     private static final Pattern STANDARD_HEX_PATTERN = Pattern.compile("(?i)&#([0-9A-F]{6})");
     private static final Pattern BUNGEE_HEX_PATTERN = Pattern.compile("(?i)&x(&[0-9A-F]){6}");
 
-	public static String sectionToAmpersand(String s) {
-		return s.replace("§", "&");
+	public static String sectionToAmpersand(String input) {
+		return input.replace(SECTION, AMPERSAND);
 	}
 
 	public static String bungeeHexToStandardHex(String input) {
@@ -24,7 +29,7 @@ public final class LegacyTextUtils {
         StringBuffer buffer = new StringBuffer();
         while (matcher.find()) {
             String hexColor = matcher.group().replace("&x", "").replace("&", "");
-            matcher.appendReplacement(buffer, "&#" + hexColor.toUpperCase());
+            matcher.appendReplacement(buffer, "&#" + hexColor.toUpperCase(Locale.ROOT));
         }
         matcher.appendTail(buffer);
         return buffer.toString();
@@ -35,7 +40,7 @@ public final class LegacyTextUtils {
         StringBuffer buffer = new StringBuffer();
         while (matcher.find()) {
             String hexColor = matcher.group().replace("&x", "").replace("&", "");
-            matcher.appendReplacement(buffer, "<c:#" + hexColor + ">");
+            matcher.appendReplacement(buffer, "<c:#" + hexColor.toUpperCase(Locale.ROOT) + ">");
         }
         matcher.appendTail(buffer);
         return buffer.toString();
@@ -60,15 +65,20 @@ public final class LegacyTextUtils {
             return "";
         }
 
-		String colorName = color.getName();
-		if (colorName == "underline") {
-			colorName = "underlined";
-		}
-
-		if (colorName == "reset") {
-			return "<lr>";
+		TextStyle.Tag tag = TextStyle.BukkitTag.get(color);
+		if (close) {
+			return tag.close();
 		} else {
-			return "<" + (close ? "/" : "") + colorName + ">";
+			return tag.open();
+		}
+	}
+
+	public static String colorToAdventure(String input, boolean close) {
+		if (input == null || input.isEmpty()) return "";
+		if (close) {
+			return LegacyComponentSerializer.legacySection().serializeOr(Formatter.absolute().process(input), "");
+		} else {
+			return LegacyComponentSerializer.legacySection().serializeOr(Formatter.legacy().process(input), "");
 		}
     }
 
@@ -77,8 +87,7 @@ public final class LegacyTextUtils {
         StringBuffer buffer = new StringBuffer();
 
         while (matcher.find()) {
-            char code = matcher.group(1).toLowerCase().charAt(0);
-            ChatColor color = ChatColor.getByChar(code);
+            ChatColor color = ChatColor.getByChar(matcher.group(1));
             if (color != null) {
                 matcher.appendReplacement(buffer, colorToAdventure(color));
             }
@@ -109,7 +118,7 @@ public final class LegacyTextUtils {
 		return LegacyComponentSerializer.legacySection().serializeOr(Formatter.legacy().process(input), "");
 	}
 
-	public static String fromAdventure(Component input) {
+	public static String serialize(Component input) {
 		return LegacyComponentSerializer.legacySection().serializeOr(input, "");
 	}
 }

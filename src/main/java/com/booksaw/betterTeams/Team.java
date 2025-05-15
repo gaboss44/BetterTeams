@@ -522,11 +522,11 @@ public class Team {
 	}
 
 	public @NotNull String getOpenColor() {
-		return color == null ? "" : LegacyTextUtils.colorToAdventure(color.asBungee());
+		return color == null ? "" : LegacyTextUtils.colorToAdventure(color);
 	}
 
 	public @NotNull String getCloseColor() {
-		return color == null ? "" : LegacyTextUtils.colorToAdventure(color.asBungee(), true);
+		return color == null ? "" : LegacyTextUtils.colorToAdventure(color, true);
 	}
 
 	public @NotNull String getOpenMultiColor() {
@@ -566,7 +566,7 @@ public class Team {
 		if (resetTo == null) {
 			return name;
 		} else if (asAdventure) {
-			return getAdventureDisplayName(true) + LegacyTextUtils.colorToAdventure(resetTo.asBungee());
+			return getAdventureDisplayName(true) + LegacyTextUtils.colorToAdventure(resetTo);
 		} else {
 			return displayName + resetTo;
 		}
@@ -626,7 +626,7 @@ public class Team {
 		} else if (tag == null || tag.isEmpty()) {
 			return getDisplayName(asAdventure);
 		} else {
-			return getTag(asAdventure) + (asAdventure ? LegacyTextUtils.colorToAdventure(returnTo.asBungee()) : returnTo);
+			return getTag(asAdventure) + (asAdventure ? LegacyTextUtils.colorToAdventure(returnTo) : returnTo);
 		}
 	}
 
@@ -1144,7 +1144,7 @@ public class Team {
 			MessageManager.sendFullMessage(Bukkit.getConsoleSender(), chatMsg.getMessage());
 		}
 
-		String fMessage = LegacyTextUtils.fromAdventure(chatMsg.getMessage());
+		String fMessage = LegacyTextUtils.serialize(chatMsg.getMessage());
 		// Notify third party plugins that a message has been dispatched
 		Bukkit.getPluginManager().callEvent(new PostTeamSendMessageEvent(this, sender, fMessage, recipients));
 
