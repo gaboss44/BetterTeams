@@ -3,8 +3,8 @@ title: "BetterTeams Shop Extension"
 description: "BetterTeam Shop extension is similar like other type shop plugin!"
 author: "ProsameOG"
 image: "https://www.spigotmc.org/data/resource_icons/131/131531.jpg?1767701600"
-downloadUrl: "https://www.spigotmc.org/resources/betterteam-shop-extension.131531/"
-tags: ["Permissions", "Integration", "Contexts"]
+downloadUrl: "https://www.spigotmc.org/resources/131531/"
+tags: ["Shop", "Vault"]
 ---
 
 # BetterTeam Shop Extension
